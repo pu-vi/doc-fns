@@ -33,25 +33,33 @@ Incoming Request
 
 Data isolation is enforced at the database and application authorization layers:
 
-### 1. Tenant Ownership
-Every store record is strictly bound to an authenticated `userId` (the store owner):
+### 1. Tenant Membership
+A user can belong to multiple stores. Platform authority and store authority are deliberately separate:
 ```prisma
 model Store {
-  id          String   @id @default(uuid())
-  slug        String   @unique
-  name        String
-  userId      String   @unique // 1:1 relationship for MVP
-  user        User     @relation(fields: [userId], references: [id])
-  products    StoreProduct[]
-  categories  StoreCategory[]
-  theme       StoreTheme?
+  id       String        @id @default(uuid())
+  slug     String        @unique
+  name     String
+  members  StoreMember[]
+  products Product[]
+}
+
+model StoreMember {
+  userId  String
+  storeId String
+  role    StoreRole // OWNER, MANAGER, BAKER, STAFF, DELIVERY, ACCOUNTANT
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, storeId])
 }
 ```
 
 ### 2. Authorization Boundary Enforcement
 * **Public Reads:** Public visitors can only query stores where `status == "PUBLISHED"`.
-* **Owner Writes:** All mutations (`POST /api/store/products`, `PUT /api/store/profile`) verify that the active session's `userId` matches the `Store.userId`.
-* **Cross-Tenant Guard:** Store A cannot access or mutate resources belonging to Store B. Automated regression tests verify that unauthorized cross-tenant mutations return `403 Forbidden`.
+* **Role-scoped writes:** Mutations verify the active user's membership and the required store role; platform moderation uses the separate `PlatformRole`.
+* **Cross-tenant guard:** A user may access or mutate a store resource only through a membership for that store. Authorization tests must cover attempts against another store's resources.
 
 ---
 
@@ -62,4 +70,3 @@ Because baker menus do not change every second, public storefront pages benefit 
 * **Initial Render:** Pre-rendered at edge or on first request.
 * **Cache Revalidation:** Cached with an `s-maxage=60, stale-while-revalidate=300` header.
 * **On-Demand Cache Purge:** When a baker updates a product price or toggles an item out of stock in their dashboard, the API triggers an instant revalidation tag for `store-[slug]`, ensuring instant updates without waiting for cache TTLs.
-

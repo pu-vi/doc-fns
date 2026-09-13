@@ -18,7 +18,7 @@ Before MVP 1 is deployed to production, every item in this table must be fully s
 | :--- | :--- | :--- | :--- | :--- |
 | **1. 🔐 Auth & Identity** | Email/password, Google OAuth, session refresh, and password reset work flawlessly in production. | Clean test signups, session persistence across tabs, rate-limited auth endpoints. | Auth Lead | `READY` |
 | **2. 👤 Tenant Isolation** | Strict authorization boundaries prevent Store A from accessing or mutating Store B's resources. | Automated IDOR and multi-tenant security regression tests passing with 0 vulnerabilities. | SecOps | `READY` |
-| **3. 🏪 Store Onboarding** | A baker can complete the 4-step wizard and publish a live storefront in under 5 minutes. | End-to-end user testing on both mobile and desktop without manual DB intervention. | Product | `READY` |
+| **3. 🏪 Store Onboarding** | A baker can complete or resume setup, optionally add products, preview, and publish a storefront. | End-to-end user testing on both mobile and desktop without manual DB intervention. | Product | `READY` |
 | **4. 🛍️ Catalog Management** | Products, categories, images, prices, and Indian units (KG, g, pcs) create and display correctly. | Full CRUD testing across 10 sample bakery menus with varied price variants. | QA Lead | `READY` |
 | **5. 💬 WhatsApp Linkage** | Click-to-chat opens with pre-filled context (product, variant, price, storefront URL). | Verified on iOS WhatsApp, Android WhatsApp, and WhatsApp Web. | Growth | `READY` |
 | **6. 📍 Local Discovery** | Geolocation detection and manual city/locality searches return accurate nearby bakers. | Tested across multiple test coordinates (Lucknow central, outer ring, no results fallback). | Backend | `READY` |

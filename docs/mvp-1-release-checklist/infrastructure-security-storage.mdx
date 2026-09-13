@@ -19,12 +19,12 @@ Comprehensive verification checklists for Sections 7, 8, 9, 10, 18, 19, and 20 c
 * [ ] Database seed scripts separated from schema migration pipelines.
 * [ ] **Critical Production Indexes Verified:**
   * [ ] Unique B-Tree index on `Store.slug`
-  * [ ] Unique index on `Store.userId`
+  * [ ] Unique composite constraint on `StoreMember(userId, storeId)`
   * [ ] Compound index on `[Store.latitude, Store.longitude]` for geospatial queries
   * [ ] Index on `Store.city` and `Store.status`
   * [ ] Index on `CatalogProduct.slug`
-  * [ ] Index on `StoreProduct.storeId`
-  * [ ] Index on `StoreProduct.categoryId`
+  * [ ] Index on `Product.storeId`
+  * [ ] Index on `ProductVariant(productId, sortOrder)`
   * [ ] Index on status fields (`StoreStatus`, `isAvailable`)
 * [ ] Unique constraints verified across database tables.
 * [ ] Foreign keys and referential integrity rules verified.
@@ -70,7 +70,7 @@ Comprehensive verification checklists for Sections 7, 8, 9, 10, 18, 19, and 20 c
 * [ ] Production HTTPS enforced with HSTS headers.
 * [ ] Secure cookies configured (`Secure`, `HttpOnly`, `SameSite=Lax` or `Strict`).
 * [ ] Authentication session security and token rotation verified.
-* [ ] Password handling delegated entirely to Firebase Authentication.
+* [ ] Password handling and session security configured through Better Auth with its Prisma adapter.
 * [ ] Authorization regression tests executed.
 * [ ] Insecure Direct Object Reference (IDOR) testing completed across all tenant endpoints.
 * [ ] Mass-assignment testing completed (unauthorized role escalation blocked).
@@ -81,7 +81,7 @@ Comprehensive verification checklists for Sections 7, 8, 9, 10, 18, 19, and 20 c
 
 ### Secrets Management
 * [ ] Database credentials secured in encrypted environment store.
-* [ ] Firebase Admin SDK private keys secured.
+* [ ] Better Auth secret and OAuth-provider credentials secured.
 * [ ] Cloudflare R2 storage access keys secured.
 * [ ] Transactional email credentials secured.
 * [ ] Geolocation / Maps API keys restricted by HTTP referrer and IP.
@@ -119,7 +119,7 @@ Comprehensive verification checklists for Sections 7, 8, 9, 10, 18, 19, and 20 c
 * [ ] Environment variables strictly separated between environments.
 * [ ] Production database completely isolated from staging.
 * [ ] Production object storage bucket isolated from staging uploads.
-* [ ] Production Firebase Auth project isolated from test accounts.
+* [ ] Production Better Auth secrets, OAuth credentials, and database are isolated from test environments.
 
 ### Deployment & CI Pipeline
 * [ ] Continuous Integration (CI) pipeline passes on every pull request.
