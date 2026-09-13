@@ -1,0 +1,68 @@
+---
+id: technology-stack
+title: Core Technology Stack
+sidebar_position: 1
+---
+
+# Core Technology Stack
+
+The Flour n Sugar engineering architecture is designed around high performance, zero-ops edge delivery, robust data integrity, and cost efficiency.
+
+```text
+┌─────────────────────────────────────────────────────────────┐
+│                      Client / Consumer                      │
+└──────────────────────────────┬──────────────────────────────┘
+                               │ HTTPS / CDN
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Vercel Edge Network                      │
+│      Next.js (App Router, Server Components, SSR / SSG)     │
+└──────────────┬──────────────────────────────┬───────────────┘
+               │                              │
+               ▼                              ▼
+┌──────────────────────────────┐ ┌────────────────────────────┐
+│      Firebase Auth           │ │     Cloudflare R2          │
+│ • Secure session management  │ │ • S3-compatible storage    │
+│ • Google OAuth & Email/Pass  │ │ • Zero egress image asset  │
+│ • JWT token verification     │ │ • WebP/AVIF CDN delivery   │
+└──────────────────────────────┘ └────────────────────────────┘
+               │
+               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                     Prisma ORM Layer                        │
+│          Connection pooling & strict type validation        │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  PostgreSQL Database                        │
+│        Relational schema, indexes & geospatial query        │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Component Selection Rationale
+
+### 1. Frontend Framework: Next.js (App Router)
+* **Server Components & SSR:** Essential for instant initial page loads and search engine crawler indexing. Public baker pages are rendered on the server with minimal client-side hydration.
+* **Dynamic Route Matching:** Seamless handling of both marketplace pages (`/locations/lucknow`) and multi-tenant storefronts (`/:storeSlug`).
+* **Image Optimization:** Automated responsive image resizing and WebP conversion via `next/image`.
+
+### 2. Hosting & Deployment: Vercel
+* **Global Edge Network:** Low-latency caching of static assets across Indian nodes (Mumbai, Chennai, Delhi).
+* **Zero-Downtime Deployments:** Atomic deploys with instant rollbacks and preview URLs for continuous integration.
+
+### 3. Database & ORM: PostgreSQL + Prisma
+* **PostgreSQL:** Industry-standard ACID compliance for store profiles, catalog pricing, variants, and future transactional accounting.
+* **Geospatial Support:** Capable of running spatial queries (Haversine distance or PostGIS) for location-based bakery search.
+* **Prisma ORM:** End-to-end TypeScript type-safety from database schema to API response handlers, eliminating runtime schema mismatches.
+
+### 4. Authentication: Firebase Authentication
+* **Delegated Auth Security:** Eliminates liability for hashing and storing sensitive passwords in the application database.
+* **Social & Passwordless Login:** Out-of-the-box support for Google Sign-In and Email/Password with verification links and password recovery.
+
+### 5. Media & Asset Storage: Cloudflare R2
+* **Zero Egress Fees:** Bakery storefronts are media-heavy (cake galleries, menu pictures). Cloudflare R2 provides S3 API compatibility with zero egress bandwidth charges.
+* **Fast Global CDN:** High-speed asset caching through Cloudflare's global edge network.
+

@@ -1,0 +1,11 @@
+{
+  "label": "MVP 1 Release Checklist",
+  "position": 8,
+  "collapsed": false,
+  "link": {
+    "type": "generated-index",
+    "title": "MVP 1 Release Checklist",
+    "description": "Production launch gates, regression checklists, security audits, and deployment playbooks for MVP 1.",
+    "slug": "/mvp-1-release-checklist"
+  }
+}

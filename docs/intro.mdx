@@ -1,50 +1,81 @@
 ---
 id: home
-title: Overview
+title: Welcome to Flour n Sugar
 slug: /
 sidebar_position: 1
 ---
 
-# Tutorial Intro
+# Flour n Sugar Documentation
 
-Let's discover **Docusaurus in less than 5 minutes**.
+> **A community and discovery platform for local, home, and independent bakers.**
 
-## Getting Started
+Welcome to the official product, architecture, and engineering documentation for **Flour n Sugar**. This documentation outlines the platform vision, user experience journeys, MVP 1 functional specifications, phased expansion roadmap, business strategy, technical architecture, and production readiness checklists.
 
-Get started by **creating a new site**.
+---
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+## What is Flour n Sugar?
 
-### What you'll need
+**Flour n Sugar** is a dual-sided platform designed to help consumers discover local, home, and artisanal bakers while empowering bakers with a lightweight digital presence to showcase their creations and scale their businesses.
 
-- [Node.js](https://nodejs.org/en/download/) version 20.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+The platform combines two complementary experiences:
 
-## Generate a new site
-
-Generate a new Docusaurus site using the **classic template**.
-
-The classic template will automatically be added to your project after you run the command:
-
-```bash
-npm init docusaurus@latest my-website classic
+```text
+┌────────────────────────────────────────────────────────────────────────┐
+│                             Flour n Sugar                              │
+├──────────────────────────────────┬─────────────────────────────────────┤
+│   1. Community & Discovery       │   2. Lightweight SaaS Storefront    │
+│            Marketplace           │                                     │
+├──────────────────────────────────┼─────────────────────────────────────┤
+│ • Local discovery & geolocation  │ • Dedicated tenant URL (/store-slug)│
+│ • City, neighborhood & area tags │ • Digital storefront mini-website   │
+│ • Category & product browsing    │ • Visual product catalog & pricing  │
+│ • Baker comparisons & galleries  │ • Custom units & product variants   │
+│ • Direct contact options         │ • WhatsApp click-to-chat integration│
+└──────────────────────────────────┴─────────────────────────────────────┘
 ```
 
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
+The initial goal is **not** to replace existing channels such as WhatsApp, Instagram, phone calls, or email. Instead, Flour n Sugar acts as the **discovery and visibility layer** that bridges consumers with local bakers, standardizing catalogs and making it effortless to initiate inquiries and place orders.
 
-The command also installs all necessary dependencies you need to run Docusaurus.
+---
 
-## Start your site
+## The Initial Product North Star
 
-Run the development server:
+:::tip Product North Star
+**"Every baker should be able to create a beautiful online presence in minutes, and every customer should be able to discover local bakers and contact them in seconds."**
+:::
 
-```bash
-cd my-website
-npm run start
-```
+Every feature, architectural decision, and design choice for MVP 1 is ruthlessly prioritized against this North Star.
 
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
+---
 
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
+## Core Pillars & Values
 
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+1. **Local-First & Community-Driven:** Baking is deeply personal. Rather than feeling like a faceless bulk e-commerce website, Flour n Sugar emphasizes local neighborhood bakers, authentic stories, and community connection.
+2. **Effortless for Bakers:** Home and small-scale bakers are artisans, not IT engineers. Profile creation, catalog management, and variant pricing are designed for zero-learning-curve simplicity.
+3. **Discovery Before Commerce:** Enable discovery, exploration, and direct connection first. Complex checkout, inventory, and payment rails are introduced progressively as transaction volume demands.
+4. **Leverage Existing Rails:** Instead of rebuilding messaging or delivery infrastructure, the platform integrates deeply with WhatsApp, phone, SMS, and email.
+5. **Multi-Tenant from Day 1:** Every baker operates an isolated storefront identity (`flournsugar.com/webake`), preparing the foundation for future custom domains and advanced SaaS tooling.
+
+---
+
+## Documentation Guide & Sitemap
+
+Explore the documentation across the following sections:
+
+| Documentation Section | Key Topics Covered |
+| :--- | :--- |
+| **[Overview & Philosophy](/overview/problem-and-opportunity)** | Problem statement, core concept, 8 design principles, and target personas. |
+| **[User Experience & Journeys](/user-experience/customer-journey)** | End-to-end customer discovery journey, baker storefront experience, and inquiry communication channels. |
+| **[MVP Specifications](/mvp-specifications/mvp-scope)** | MVP 1 scope boundary (inclusions vs exclusions), storefront architecture, Indian units & catalog system, and discovery/SEO specs. |
+| **[Roadmap & Long-Term Vision](/roadmap-and-vision/roadmap-phases)** | 5-phase product roadmap (Discovery → Ordering → Payments → SaaS → B2B), ecosystem expansion, and North Star guidance. |
+| **[Business & Go-To-Market](/business-strategy/marketplace-flywheel)** | The marketplace flywheel, city-by-city geographic rollout (Lucknow → UP → Metros → Pan-India), and 4-stage monetization model. |
+| **[Technical Architecture](/technical-architecture/technology-stack)** | Next.js, PostgreSQL, Prisma, Firebase Auth, Cloudflare R2 architecture, multi-tenant routing, and data schema design. |
+| **[MVP 1 Release Checklist](/mvp-1-release-checklist/release-gates-and-framework)** | Master production release gates, module-by-module acceptance criteria, security, SEO, observability, and launch day playbook. |
+
+---
+
+## Quick Reference Links
+
+- **Staging Platform:** [puza.shop](https://puza.shop)
+- **Tech Stack:** Next.js (App Router), PostgreSQL, Prisma ORM, Firebase Auth, Cloudflare R2, Vercel
+- **Primary Market:** India (Starting with Lucknow & Uttar Pradesh)

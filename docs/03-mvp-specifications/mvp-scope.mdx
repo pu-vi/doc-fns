@@ -1,0 +1,73 @@
+---
+id: mvp-scope
+title: MVP 1 Scope & Boundaries
+sidebar_position: 1
+---
+
+# MVP 1 Scope & Boundaries
+
+The first MVP focuses on one core mission:
+
+:::important MVP Mission
+**Help customers discover local bakers and help bakers establish an online presence.**
+:::
+
+To achieve this rapidly and reliably, the platform establishes clear boundaries between what is strictly included in MVP 1 and what is deferred to subsequent phases.
+
+---
+
+## What MVP 1 Includes
+
+```text
+┌────────────────────────────────────────────────────────────────────────┐
+│                          MVP 1 INCLUDED SCOPE                          │
+├──────────────────┬───────────────────────┬─────────────────────────────┤
+│ 1. Customer      │ 2. Baker              │ 3. Platform Admin           │
+├──────────────────┼───────────────────────┼─────────────────────────────┤
+│ • Landing page   │ • Email/Auth login    │ • Baker moderation/approval │
+│ • Geo-discovery  │ • Store profile wizard│ • Public catalog oversight  │
+│ • Keyword search │ • Catalog management  │ • Bad content deactivation  │
+│ • Category tags  │ • Category organizing │ • Basic traffic analytics   │
+│ • Store profiles │ • Pricing & variants  │ • SEO meta & sitemaps       │
+│ • WhatsApp link  │ • Theme customization │ • Multi-tenant routing      │
+└──────────────────┴───────────────────────┴─────────────────────────────┘
+```
+
+### Customer Experience Scope
+* **Landing Page:** Value proposition, instant location detector, featured local baker cards, curated category carousels, and search bar.
+* **Location-Based Discovery:** Browser geo-location detection with fallback to manual city/locality selection. Distance calculation and radius filtering.
+* **Keyword & Category Search:** Fast filtering by product type (Cakes, Cookies, Bread, Brownies), dietary tags (Eggless, Vegan), or baker name.
+* **Public Baker Storefront:** Multi-tenant profile view at `flournsugar.com/:storeSlug` detailing branding, biography, address, operating hours, and catalog.
+* **Catalog Exploration:** Clear cards showing item photos, descriptions, price tags, weight/quantity options, and availability badges.
+* **Direct Inquiry:** WhatsApp click-to-chat with automated message pre-fill, plus direct calling buttons.
+
+### Baker Experience Scope
+* **Authentication:** Secure signup/login via Email/Password and Google OAuth. Password reset and email verification flows.
+* **Store Onboarding:** Guided wizard capturing store name, slug uniqueness, contact channels, and initial location.
+* **Store Profile Management:** Update store branding (logo, cover picture), bio, address, operational notes, and publish toggle (`Draft` vs `Published`).
+* **Catalog Management:** Create, edit, reorder, and deactivate products. Assign products to custom categories.
+* **Pricing & Variants:** Configure primary pricing, unit standards (e.g., `1 kg`, `500 g`, `Box of 4`), and custom variant options.
+* **Visual Store Customizer:** Selection of theme color palettes and typography pairings.
+
+### Platform & Admin Scope
+* **Store Moderation:** Platform administration dashboard to view, approve, reject, or disable suspicious/problematic stores.
+* **SEO Foundation:** Server-side rendered meta tags, Open Graph images, canonical links, and auto-generated dynamic sitemaps.
+* **Basic Analytics:** Pageview events, inquiry click tracking, and store creation metrics.
+
+---
+
+## What MVP 1 Intentionally Excludes
+
+The following features are strictly out of scope for MVP 1 to prevent delays and complexity:
+
+| Excluded Feature | Rationale for Exclusion | Target Phase |
+| :--- | :--- | :--- |
+| **In-App Payments / Gateway** | Eliminates complex merchant KYC, payment gateway onboarding (Razorpay), chargeback handling, and refund liabilities. | Phase 3 |
+| **Native Shopping Cart & Checkout** | Reduces checkout friction; allows custom discussions for artisanal bakes. | Phase 2 |
+| **Live Order Tracking** | Avoids GPS tracking complexity and delivery partner API integrations. | Phase 2 |
+| **Delivery Fleet Integration** | Delivery is coordinated directly between baker and customer or local courier. | Phase 3 |
+| **Inventory Stock Decrement** | Most home bakes are made-to-order on pre-order lead times rather than pre-stocked inventory. | Phase 4 |
+| **Automated Commission Billing** | The platform is 100% free for initial bakers to maximize supply acquisition. | Stage 4 |
+| **B2B Sourcing / Bulk Ingredients** | Focus is strictly consumer-to-baker discovery during launch. | Phase 5 |
+| **Native Mobile Apps (iOS/Android)** | Web-first responsive PWA delivers 95% of native experience at 10% of engineering maintenance. | Post-MVP |
+

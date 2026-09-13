@@ -1,0 +1,65 @@
+---
+id: multi-tenant-architecture
+title: Multi-Tenant Routing & Isolation
+sidebar_position: 2
+---
+
+# Multi-Tenant Routing & Isolation
+
+Flour n Sugar treats each baker/store as an independent tenant from day one, ensuring strict data boundaries while running on a unified, high-performance web infrastructure.
+
+---
+
+## Architectural Patterns
+
+```text
+Incoming Request
+       │
+       ├───> Path: /api/*, /admin/*, /locations/*, /categories/*
+       │     └── Served by Central Marketplace / System Handlers
+       │
+       └───> Path: /:storeSlug  (e.g., /webake)
+             │
+             ├── 1. Middleware Checks Reserved Slugs (api, admin, etc.)
+             ├── 2. Query Store by Slug (Prisma cache layer)
+             ├── 3. If Store is Published -> Hydrate Tenant Storefront Page
+             ├── 4. If Store is Unpublished -> Render "Under Construction"
+             └── 5. If Store Not Found -> Render Branded 404 with Discovery Suggestions
+```
+
+---
+
+## Data Isolation Strategy
+
+Data isolation is enforced at the database and application authorization layers:
+
+### 1. Tenant Ownership
+Every store record is strictly bound to an authenticated `userId` (the store owner):
+```prisma
+model Store {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  name        String
+  userId      String   @unique // 1:1 relationship for MVP
+  user        User     @relation(fields: [userId], references: [id])
+  products    StoreProduct[]
+  categories  StoreCategory[]
+  theme       StoreTheme?
+}
+```
+
+### 2. Authorization Boundary Enforcement
+* **Public Reads:** Public visitors can only query stores where `status == "PUBLISHED"`.
+* **Owner Writes:** All mutations (`POST /api/store/products`, `PUT /api/store/profile`) verify that the active session's `userId` matches the `Store.userId`.
+* **Cross-Tenant Guard:** Store A cannot access or mutate resources belonging to Store B. Automated regression tests verify that unauthorized cross-tenant mutations return `403 Forbidden`.
+
+---
+
+## Caching & Revalidation Strategy
+
+Because baker menus do not change every second, public storefront pages benefit from **Incremental Static Regeneration (ISR)**:
+
+* **Initial Render:** Pre-rendered at edge or on first request.
+* **Cache Revalidation:** Cached with an `s-maxage=60, stale-while-revalidate=300` header.
+* **On-Demand Cache Purge:** When a baker updates a product price or toggles an item out of stock in their dashboard, the API triggers an instant revalidation tag for `store-[slug]`, ensuring instant updates without waiting for cache TTLs.
+

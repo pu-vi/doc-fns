@@ -1,0 +1,277 @@
+---
+id: operations-seo-launch
+title: Operations, SEO & Launch Day Playbook
+sidebar_position: 4
+---
+
+# Operations, SEO & Launch Day Playbook
+
+Comprehensive verification checklists for Sections 11 through 17 and 21 through 24 covering SEO, web performance, observability, email delivery, analytics, admin moderation, legal compliance in India, QA testing, smoke test protocol, and the Day 0 / Days 1–7 post-launch playbook.
+
+---
+
+## 11. SEO & Public Web Verification
+
+* [ ] Global homepage `<title>` and `<meta name="description">` optimized for target search queries.
+* [ ] Store page title format: `[Store Name] — Local Baker in [City] | Flour n Sugar`.
+* [ ] Store page meta description format: `Browse fresh cakes, brownies, and bakes by [Store Name] in [Locality, City]. Contact directly via WhatsApp.`
+* [ ] Product and category metadata generated dynamically.
+* [ ] Canonical URL tags (`<link rel="canonical">`) present on every public page.
+* [ ] Open Graph (`og:title`, `og:description`, `og:image`, `og:url`) tags verified using social debuggers.
+* [ ] Twitter / X card metadata configured (`summary_large_image`).
+* [ ] Dynamic XML sitemap generated at `/sitemap.xml` containing all published stores and categories.
+* [ ] `robots.txt` configured: allows crawlers on `/`, `/bakers/*`, `/locations/*`; disallows `/dashboard/*`, `/admin/*`, `/api/*`.
+* [ ] 404 error page returns genuine `404 Not Found` HTTP status code (not a soft 200).
+* [ ] Private and admin pages include `<meta name="robots" content="noindex, nofollow">`.
+* [ ] Structured data (JSON-LD) for Schema.org `Bakery` and `Product` validates on Google Rich Results Test without errors.
+* [ ] Google Search Console property verified and sitemap submitted.
+* [ ] Organic search engine indexing strategy defined for new city rollouts.
+
+---
+
+## 12. Performance & Web Vitals
+
+* [ ] Homepage load tested under simulated 4G mobile conditions.
+* [ ] Storefront initial load tested across multiple store sizes (1 product vs 50 products).
+* [ ] Product listing page renders without layout shifting (`CLS < 0.05`).
+* [ ] Nearby-store geospatial query tested with realistic dataset (1,000+ mock stores).
+* [ ] Database query performance reviewed: all critical queries execute in `< 50ms`.
+* [ ] N+1 queries identified and eliminated using Prisma `include` and select projections.
+* [ ] Images served in modern WebP format with responsive `srcset` definitions.
+* [ ] JavaScript bundle reviewed; unnecessary heavy client libraries removed.
+* [ ] Lazy loading implemented for off-screen product images and modals.
+* [ ] Edge caching headers reviewed for public storefronts and category listings.
+* [ ] Content Delivery Network (CDN) edge cache hit ratio verified `> 85%`.
+* [ ] Core Web Vitals audited on PageSpeed Insights:
+  * [ ] **LCP (Largest Contentful Paint):** `< 2.2s`
+  * [ ] **CLS (Cumulative Layout Shift):** `< 0.05`
+  * [ ] **FID / INP (Interaction to Next Paint):** `< 100ms`
+* [ ] Production-like dataset tested during load tests.
+
+---
+
+## 13. Observability, Logging & Monitoring
+
+### Error Monitoring
+* [ ] Sentry / Error Tracking initialized across both client-side and server-side runtimes.
+* [ ] Unhandled server errors (500s) captured with full stack traces.
+* [ ] Client-side runtime exceptions and script crashes captured.
+* [ ] Unhandled Promise rejections monitored.
+* [ ] Authentication failure spikes monitored.
+* [ ] Database connection drops or query timeout errors captured.
+
+### Logging
+* [ ] Structured JSON application logging in place.
+* [ ] Correlation request IDs passed through all middleware and API handlers.
+* [ ] Important business events logged (Store Onboarded, Store Published, WhatsApp Click).
+* [ ] Sensitive user data (passwords, auth tokens, full card details) strictly excluded from logs.
+* [ ] Log retention policy configured (30-day retention).
+
+### Monitoring & Uptime
+* [ ] Application uptime monitoring (Better Stack / UptimeRobot) pinging `/api/health` every 60 seconds.
+* [ ] Database health and connection pool monitoring configured.
+* [ ] API latency metrics tracked at 95th and 99th percentiles.
+* [ ] Error-rate alerts configured to trigger PagerDuty / Slack notifications when error rate exceeds 1%.
+* [ ] Serverless resource consumption and memory limits monitored.
+
+---
+
+## 14. Email & Notifications
+
+* [ ] Production transactional email provider provisioned (Resend / SendGrid / AWS SES).
+* [ ] Sender domain configured on custom branded domain (`mail.flournsugar.com`).
+* [ ] **Email Authentication DNS Records:**
+  * [ ] SPF record verified
+  * [ ] DKIM signature active and verified
+  * [ ] DMARC policy defined (`v=DMARC1; p=quarantine; ...`)
+* [ ] Email verification workflow sends and delivers in `< 10 seconds`.
+* [ ] Password reset link delivery tested.
+* [ ] Bounced and failed email webhooks monitored.
+* [ ] HTML email templates tested for responsiveness.
+* [ ] Mobile email client rendering tested on Apple Mail and Gmail app.
+
+---
+
+## 15. Analytics & Event Tracking
+
+Minimum required telemetry events configured before launch:
+
+### User Events
+* [ ] `user_signed_up` (method: Email / Google)
+* [ ] `user_logged_in`
+* [ ] `location_permission_granted`
+* [ ] `location_permission_denied`
+
+### Discovery Events
+* [ ] `store_search_performed` (query, city, radius)
+* [ ] `category_filter_clicked` (category_name)
+* [ ] `store_profile_viewed` (store_slug, city)
+* [ ] `product_modal_opened` (product_id, store_slug)
+* [ ] `whatsapp_inquiry_clicked` (product_id, store_slug, listed_price)
+
+### Baker Events
+* [ ] `store_created` (store_slug)
+* [ ] `onboarding_wizard_completed` (duration_seconds)
+* [ ] `product_created` (category, price)
+* [ ] `product_updated`
+* [ ] `store_published`
+
+### Business KPI Metrics Dashboard
+* [ ] Total registered users
+* [ ] Total stores created vs total published stores
+* [ ] Average products listed per active store
+* [ ] Daily store page views
+* [ ] Discovery-to-Inquiry conversion rate (WhatsApp clicks / Store views)
+
+---
+
+## 16. Admin & Operations
+
+* [ ] Admin dashboard viewable by users with `role: ADMIN`.
+* [ ] View and search all registered users.
+* [ ] View and filter all stores (Draft, Published, Suspended).
+* [ ] View and audit all catalog products.
+* [ ] Instant one-click disable/suspend for problematic or fraudulent stores.
+* [ ] Disable problematic or abusive user accounts.
+* [ ] Moderation workflow for inappropriate or copyright-infringing images.
+* [ ] Ability to correct corrupt or malformed catalog data directly.
+* [ ] Duplicate store identification and merge/remove protocol.
+* [ ] User complaint and reported content triage mechanism (`support@flournsugar.com`).
+* [ ] Admin authorization checks enforced on every administrative API endpoint.
+* [ ] Admin audit log records all administrative actions with timestamp and admin ID.
+
+---
+
+## 17. Legal & Compliance (India Focus)
+
+* [ ] **Privacy Policy:** Discloses collection of location data, phone numbers, and usage analytics in compliance with the Digital Personal Data Protection (DPDP) Act.
+* [ ] **Terms of Service:**
+  * Defines Flour n Sugar as a discovery directory and catalog hosting service.
+  * Clarifies that food quality, taste, hygiene, packaging, and fulfillment are the exclusive responsibility of the independent baker.
+* [ ] Cookie and analytics disclosure notice where applicable.
+* [ ] Explicit user consent collected during signup.
+* [ ] Data collection practices documented and audited.
+* [ ] Data retention policy defined.
+* [ ] Account and data deletion process documented and functional upon user request.
+* [ ] Privacy grievance contact details published (`privacy@flournsugar.com`).
+* [ ] Third-party data processors documented (Firebase, Vercel, Cloudflare, Resend).
+* [ ] Location data handling: coordinates stored only for discovery proximity and not shared with third parties.
+* [ ] Indian food safety considerations: Bakers prompted to acknowledge local FSSAI compliance requirements.
+
+---
+
+## 21. Testing Suite Before Launch (Release Gate)
+
+### Automated Test Suite
+* [ ] Unit tests passing: unit formatting, price calculation, slug sanitization.
+* [ ] Integration tests passing: store creation, category association, product variants.
+* [ ] API endpoint tests passing: authentication headers, status codes, Zod validation.
+* [ ] Database migration and relational constraint tests passing.
+* [ ] Auth tests: token verification, expired session rejection.
+* [ ] Authorization tests: tenant isolation boundaries verified.
+* [ ] Critical UI tests: onboarding wizard completion, mobile navigation.
+* [ ] Automated regression suite green across all test suites.
+
+### Manual Exploratory QA
+* [ ] Google Chrome desktop testing.
+* [ ] Apple Safari desktop testing.
+* [ ] iOS Safari testing on physical iPhone.
+* [ ] Android Google Chrome testing on physical Android device.
+* [ ] Slow 3G network simulation (checking spinners, loading skeletons).
+* [ ] Empty states verified (empty catalog, empty search results, no bakes nearby).
+* [ ] Error states verified (offline network, 500 error page).
+* [ ] Invalid inputs tested (emojis in phone number, negative prices, extreme text lengths).
+* [ ] Unauthorized access attempts verified.
+* [ ] Expired session behavior verified.
+* [ ] Browser Back and Forward button navigation verified across all funnels.
+
+### Security Regression
+* [ ] User A cannot view, edit, or delete User B's profile.
+* [ ] Store Owner A cannot modify Store Owner B's catalog or settings.
+* [ ] Unauthenticated requests cannot invoke mutating `/api/*` routes.
+* [ ] Administrative endpoints reject non-admin credentials with `403 Forbidden`.
+* [ ] Private merchant data (phone, email, bank details) is never exposed in public store API responses.
+* [ ] Deactivated/suspended stores are immediately inaccessible from public web.
+
+---
+
+## 22. Production Smoke Test Protocol
+
+Execute this 20-step smoke test sequence immediately after production deployment:
+
+1. [ ] Navigate to production URL (`flournsugar.com`) -> homepage renders cleanly.
+2. [ ] Sign up a new user account with test email -> confirmation received.
+3. [ ] Verify email via sent link -> account status updates to verified.
+4. [ ] Log in with verified credentials -> redirected to onboarding.
+5. [ ] Log out -> session cleared, protected routes blocked.
+6. [ ] Log in via Google OAuth -> session created immediately.
+7. [ ] Complete store onboarding wizard (Name: "Smoke Test Bakery", Slug: "smoke-test-bakes").
+8. [ ] Add a product category ("Artisan Cakes").
+9. [ ] Upload 1 product with image, title, price (₹750), and unit (1 kg).
+10. [ ] Toggle store status to `Published`.
+11. [ ] Open incognito window and load `flournsugar.com/smoke-test-bakes`.
+12. [ ] Verify store header, bio, category, and product appear publicly.
+13. [ ] Click "Inquire via WhatsApp" -> verify WhatsApp opens with prefilled product message.
+14. [ ] Edit product price in dashboard (change to ₹800) -> verify public update within 5 seconds.
+15. [ ] Change store theme accent color -> verify color reflects on public storefront.
+16. [ ] Perform a discovery search by city ("Lucknow") -> verify "Smoke Test Bakery" appears in listings.
+17. [ ] Test storefront on physical mobile device -> verify smooth scrolling and layout.
+18. [ ] Test password reset request -> verify reset email arrives and link functions.
+19. [ ] Trigger a handled test error -> verify error appears in Sentry dashboard.
+20. [ ] Verify test pageview and click events appear in Analytics console.
+
+---
+
+## 23. Launch Day Playbook
+
+### Before Deployment (T-2 Hours)
+* [ ] Take manual backup snapshot of production database.
+* [ ] Final database migrations reviewed and dry-run executed on staging.
+* [ ] Git release version tagged (e.g., `v1.0.0-mvp`).
+* [ ] Verified rollback commit/deployment identified in case of P0 blocker.
+* [ ] Release notes prepared for bakers and community.
+* [ ] Smoke-test checklist assigned to QA team members.
+* [ ] Sentry real-time error dashboard open on secondary monitor.
+* [ ] Vercel deployment and serverless logs monitor open.
+
+### Deployment Execution (T-0)
+* [ ] Trigger production deployment via Vercel pipeline.
+* [ ] Confirm database migrations execute cleanly.
+* [ ] Verify `/api/health` returns `200 OK` with `< 100ms` DB latency.
+* [ ] Execute all 20 steps of the Production Smoke Test.
+* [ ] Verify DNS routing and SSL certificate status.
+* [ ] Verify public storefronts and marketplace discovery listings.
+
+### After Deployment (T+2 Hours to T+24 Hours)
+* [ ] Continuously monitor error rates in Sentry for unexpected exceptions.
+* [ ] Monitor database connection counts and query latency.
+* [ ] Monitor user signup funnel and track drop-offs.
+* [ ] Monitor store creation and first product publishing rate.
+* [ ] Monitor public discovery page performance and Core Web Vitals.
+* [ ] Review application logs for unexpected warnings or 4xx/5xx spikes.
+* [ ] Confirm automated nightly database backup completes successfully.
+
+---
+
+## 24. Post-Launch — First 7 Days
+
+* [ ] **Daily Morning Triage (9:00 AM):**
+  * Review all new Sentry issues and categorize.
+  * Review server latency and 99th percentile response times.
+* [ ] **Funnel Drop-Off Review:**
+  * Analyze signup-to-store-created ratio.
+  * Analyze store-created-to-first-product-published ratio.
+* [ ] **Catalog Audit:**
+  * Review most viewed products and categories across initial stores.
+  * Identify any bad catalog images or corrupt unit inputs.
+* [ ] **API Health Review:**
+  * Review failed API requests and 4xx status codes.
+* [ ] **Baker Feedback Loop:**
+  * Conduct phone or WhatsApp check-ins with the first 10 onboarded bakers.
+  * Document friction points encountered in dashboard or image uploads.
+* [ ] **Issue SLA Enforcement:**
+  * P0 (System outage / Auth failure / Data leak): Fix in `< 4 hours`.
+  * P1 (Store onboarding blocker / Image upload failure): Fix in `< 24 hours`.
+  * P2 (Visual glitch / Minor layout issue): Queue for MVP 1.1 sprint.
+* [ ] **Infrastructure Cost Review:**
+  * Audit Vercel, Supabase/RDS, and Cloudflare R2 usage against free tier limits.
