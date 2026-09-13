@@ -21,10 +21,10 @@ The Flour n Sugar engineering architecture is designed around high performance, 
                │                              │
                ▼                              ▼
 ┌──────────────────────────────┐ ┌────────────────────────────┐
-│      Firebase Auth           │ │     Cloudflare R2          │
-│ • Secure session management  │ │ • S3-compatible storage    │
-│ • Google OAuth & Email/Pass  │ │ • Zero egress image asset  │
-│ • JWT token verification     │ │ • WebP/AVIF CDN delivery   │
+│        Better Auth           │ │     Cloudflare R2          │
+│ • Database-backed sessions   │ │ • S3-compatible storage    │
+│ • OAuth, email/password, OTP │ │ • Zero egress image asset  │
+│ • Prisma adapter             │ │ • WebP/AVIF CDN delivery   │
 └──────────────────────────────┘ └────────────────────────────┘
                │
                ▼
@@ -46,7 +46,7 @@ The Flour n Sugar engineering architecture is designed around high performance, 
 
 ### 1. Frontend Framework: Next.js (App Router)
 * **Server Components & SSR:** Essential for instant initial page loads and search engine crawler indexing. Public baker pages are rendered on the server with minimal client-side hydration.
-* **Dynamic Route Matching:** Seamless handling of both marketplace pages (`/locations/lucknow`) and multi-tenant storefronts (`/:storeSlug`).
+* **Dynamic Route Matching:** Supports city and category discovery pages alongside multi-tenant storefronts (`/:storeSlug`).
 * **Image Optimization:** Automated responsive image resizing and WebP conversion via `next/image`.
 
 ### 2. Hosting & Deployment: Vercel
@@ -58,11 +58,10 @@ The Flour n Sugar engineering architecture is designed around high performance, 
 * **Geospatial Support:** Capable of running spatial queries (Haversine distance or PostGIS) for location-based bakery search.
 * **Prisma ORM:** End-to-end TypeScript type-safety from database schema to API response handlers, eliminating runtime schema mismatches.
 
-### 4. Authentication: Firebase Authentication
-* **Delegated Auth Security:** Eliminates liability for hashing and storing sensitive passwords in the application database.
-* **Social & Passwordless Login:** Out-of-the-box support for Google Sign-In and Email/Password with verification links and password recovery.
+### 4. Authentication: Better Auth
+* **Database-backed identity:** Better Auth uses the Prisma/PostgreSQL data model for users, accounts, sessions, and verification records.
+* **Sign-in and recovery:** Email/password, email OTP verification, password recovery, and supported social providers are managed through the application auth layer.
 
 ### 5. Media & Asset Storage: Cloudflare R2
 * **Zero Egress Fees:** Bakery storefronts are media-heavy (cake galleries, menu pictures). Cloudflare R2 provides S3 API compatibility with zero egress bandwidth charges.
 * **Fast Global CDN:** High-speed asset caching through Cloudflare's global edge network.
-

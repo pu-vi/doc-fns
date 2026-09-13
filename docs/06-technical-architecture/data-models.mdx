@@ -6,63 +6,57 @@ sidebar_position: 3
 
 # Data Models & Schema Design
 
-The database schema is modeled in PostgreSQL using Prisma ORM. It establishes clean relational boundaries between users, stores, catalogs, products, and categories.
-
----
+Flour n Sugar uses PostgreSQL, Prisma, and Better Auth. The model separates platform authority from a person's role within a particular store, so one person can be a customer, own a store, and work for another.
 
 ## Entity Relationship Overview
 
 ```text
-┌─────────────────┐
-│      User       │
-│  (Auth & Role)  │
-└────────┬────────┘
-         │ 1:1
-         ▼
-┌─────────────────┐ 1:N ┌─────────────────┐
-│      Store      │────>│  StoreCategory  │
-│  (Tenant Slug)  │     │ (Custom groups) │
-└────────┬────────┘     └────────┬────────┘
-         │ 1:N                   │ 1:N
-         ▼                       ▼
-┌─────────────────┐ 1:N ┌─────────────────┐
-│  StoreProduct   │<────│ ProductVariant  │
-│  (Title, Desc)  │     │ (Price & Units) │
-└─────────────────┘     └─────────────────┘
-```
+User ── 1:1 ── CustomerProfile
+ │
+ ├── 1:N ── StoreMember ── N:1 ── Store ── 1:N ── Product ── 1:N ── ProductVariant
+ │                    │
+ │                    └── StoreRole (OWNER, MANAGER, BAKER, STAFF, DELIVERY, ACCOUNTANT)
+ │
+ └── PlatformRole (USER, MODERATOR, SUPPORT, ADMIN)
 
----
+Subcategory ── 1:N ── CatalogProduct
+       │
+       └── referenced by store Products
+```
 
 ## Core Prisma Schema Specification
 
+This is the intended MVP shape. It keeps authorization boundaries explicit while allowing product, image, and catalogue fields to evolve independently.
+
 ```prisma
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
-}
-
-enum Role {
+enum PlatformRole {
   USER
-  BAKER
+  MODERATOR
+  SUPPORT
   ADMIN
+}
+
+enum StoreRole {
+  OWNER
+  MANAGER
+  BAKER
+  STAFF
+  DELIVERY
+  ACCOUNTANT
 }
 
 enum StoreStatus {
   DRAFT
-  PENDING_REVIEW
   PUBLISHED
   SUSPENDED
 }
 
-enum UnitType {
+enum ProductUnit {
   KG
   GRAM
   POUND
   PIECE
+  DOZEN
   BOX
   PACK
   SLICE
@@ -73,135 +67,78 @@ enum UnitType {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  firebaseUid   String    @unique
-  email         String    @unique
-  fullName      String?
-  phone         String?
-  role          Role      @default(USER)
-  store         Store?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  @@index([email])
+  id               String       @id @default(uuid())
+  name             String
+  email            String       @unique
+  emailVerified    Boolean      @default(false)
+  image            String?
+  platformRole     PlatformRole @default(USER)
+  storeMemberships StoreMember[]
+  customerProfile  CustomerProfile?
+  sessions         Session[]
+  accounts         Account[]
 }
 
 model Store {
-  id              String          @id @default(uuid())
-  userId          String          @unique
-  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  slug            String          @unique
-  name            String
-  tagline         String?
-  description     String?
-  logoUrl         String?
-  coverUrl        String?
-  status          StoreStatus     @default(DRAFT)
-  
-  // Contact & Social
-  whatsappNumber  String
-  phoneNumber     String?
-  email           String?
-  instagramHandle String?
-  
-  // Location
-  address         String?
-  city            String
-  state           String
-  pincode         String
-  latitude        Float?
-  longitude       Float?
-  
-  // Relations
-  categories      StoreCategory[]
-  products        StoreProduct[]
-  theme           StoreTheme?
-  
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-
-  @@index([slug])
-  @@index([city])
-  @@index([status])
-  @@index([latitude, longitude])
+  id        String      @id @default(uuid())
+  slug      String      @unique
+  name      String
+  status    StoreStatus @default(DRAFT)
+  members   StoreMember[]
+  products  Product[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 }
 
-model StoreCategory {
-  id          String         @id @default(uuid())
-  storeId     String
-  store       Store          @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  name        String
-  displayOrder Int           @default(0)
-  products    StoreProduct[]
-  
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+model StoreMember {
+  userId    String
+  storeId   String
+  role      StoreRole
+  user      User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  store     Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@unique([storeId, name])
+  @@id([userId, storeId])
   @@index([storeId])
 }
 
-model StoreProduct {
+model Product {
   id            String           @id @default(uuid())
   storeId       String
   store         Store            @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  categoryId    String?
-  category      StoreCategory?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  
-  title         String
+  name          String
   description   String?
-  images        String[]
+  images        String[]         @default([])
   isEggless     Boolean          @default(false)
   isVegan       Boolean          @default(false)
   isGlutenFree  Boolean          @default(false)
   isAvailable   Boolean          @default(true)
-  displayOrder  Int              @default(0)
-  
   variants      ProductVariant[]
-  
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
 
   @@index([storeId])
-  @@index([categoryId])
 }
 
 model ProductVariant {
-  id          String        @id @default(uuid())
+  id          String      @id @default(uuid())
   productId   String
-  product     StoreProduct  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
-  name        String?       // e.g., "500g", "Box of 6"
-  price       Decimal       @db.Decimal(10, 2)
-  unit        UnitType
-  unitQuantity Float        @default(1.0)
-  isDefault   Boolean       @default(false)
-  
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  product     Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name        String?     // Optional display name, e.g. "Half Kg"
+  quantity    Decimal?    @db.Decimal(10, 3)
+  unit        ProductUnit?
+  price       Decimal     @db.Decimal(10, 2)
+  isAvailable Boolean     @default(true)
+  sortOrder   Int         @default(0)
 
-  @@index([productId])
-}
-
-model StoreTheme {
-  id          String   @id @default(uuid())
-  storeId     String   @unique
-  store       Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  
-  primaryColor   String  @default("#E17055")
-  fontFamily     String  @default("Inter")
-  bannerStyle    String  @default("STANDARD")
-  
-  updatedAt      DateTime @updatedAt
+  @@index([productId, sortOrder])
 }
 ```
 
----
+## Authorization and Data-Isolation Rules
 
-## Indexing Strategy & Geospatial Lookups
-
-* **Location Indexing:** Indexing `[latitude, longitude]` and `[city]` supports sub-50ms radius queries for local discovery searches.
-* **Slug Lookups:** A unique B-Tree index on `Store.slug` guarantees `O(1)` lookup times for incoming storefront requests.
-* **Soft Deletion & Moderation:** The `StoreStatus` enum enables instant platform deactivation of problematic content without permanent data loss.
-
+* `PlatformRole` controls platform-wide operations such as moderation and support; it is not a substitute for store permissions.
+* `StoreMember` controls access to one store. A role is a default permission bundle, allowing future refinement without changing the tenant relationship.
+* Store-facing queries and mutations must always scope records through the active store membership.
+* Public discovery and storefront reads must return only `PUBLISHED` stores. Owners and authorized staff can access their own drafts.

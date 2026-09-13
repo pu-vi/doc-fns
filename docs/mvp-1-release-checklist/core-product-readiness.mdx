@@ -21,7 +21,7 @@ Exhaustive verification checklists for Sections 1 through 6 covering product sco
   * [ ] Browse baker storefront via custom slug (`/:storeSlug`)
   * [ ] Browse products by category with dietary filters
   * [ ] Store owner registration via Google OAuth or Email
-  * [ ] Store onboarding wizard completion (< 5 mins)
+  * [ ] Store onboarding wizard: save/resume, optional products, preview, and publish
   * [ ] Store profile management (bio, address, hours, cover image)
   * [ ] Product & catalog management (CRUD, categories, price variants)
   * [ ] Storefront theme selection and accent color customization
@@ -47,10 +47,10 @@ Exhaustive verification checklists for Sections 1 through 6 covering product sco
 * [ ] Authentication error messages do not leak system internals, database errors, or account existence.
 
 ### User
-* [ ] User profile record created automatically upon initial Firebase auth signup.
+* [ ] User profile record created automatically through the Better Auth signup flow.
 * [ ] User profile update (Full Name, Phone Number, Avatar) persists to PostgreSQL.
 * [ ] Profile image upload and optimization verified.
-* [ ] User-to-store ownership relationship strictly validated (1:1 constraint for MVP).
+* [ ] User-to-store membership and role boundaries strictly validated; users may hold different roles in different stores.
 * [ ] Account deletion and deactivation strategy defined and tested.
 * [ ] User input data validation enforced via Zod schemas.
 
@@ -58,7 +58,7 @@ Exhaustive verification checklists for Sections 1 through 6 covering product sco
 
 ## 3. Store / Baker Module
 
-* [ ] Store creation flow initializes with unique UUID and assigned `userId`.
+* [ ] Store creation flow initializes with a unique UUID and an `OWNER` store membership.
 * [ ] Store onboarding wizard collects all required baseline fields:
   * [ ] Store type (Home Baker, Boutique Patisserie, Cake Studio)
   * [ ] Store name
@@ -70,6 +70,7 @@ Exhaustive verification checklists for Sections 1 through 6 covering product sco
   * [ ] Store description / bio
   * [ ] Store logo and hero cover image
   * [ ] Store custom slug
+  * [ ] Draft/resume state, optional first product, preview, and publish decision
 * [ ] Store slug uniqueness validated asynchronously in real time during input.
 * [ ] Reserved slug blacklist enforced (`admin`, `api`, `dashboard`, `auth`, `login`, `terms`, `privacy`).
 * [ ] Store publish and unpublish toggle functions instantly:
@@ -109,6 +110,7 @@ Validate supported Indian bakery units:
 * [ ] **Weight:** `GRAM` (e.g., `250 g`, `500 g`)
 * [ ] **Traditional Weight:** `POUND` (e.g., `1 lb`, `2 lbs`)
 * [ ] **Count:** `PIECE` (e.g., `1 pc`, `6 pcs`)
+* [ ] **Count:** `DOZEN` (e.g., `1 dozen`, `2 dozen`)
 * [ ] **Package:** `BOX` (e.g., `Box of 4`, `Box of 6`, `Box of 12`)
 * [ ] **Package:** `PACK` (e.g., `Pack of 2`, `Pack of 8`)
 * [ ] **Portion:** `SLICE` (e.g., `Per Slice`)
@@ -160,7 +162,7 @@ Test and sign off each layout breakpoint:
 * [ ] Geolocation permission flow:
   * [ ] User grants location: Browser coordinates used to calculate nearby bakers.
   * [ ] User denies location: Graceful prompt to select city/locality manually.
-  * [ ] Location service unavailable: Instant fallback to default city directory (Lucknow).
+  * [ ] Location service unavailable: Prompt for a manual city/locality selection without assuming a default city.
 * [ ] Nearby stores query calculates Haversine distance from coordinates.
 * [ ] Radius filter (5 km, 10 km, 25 km, All City) filters bakers accurately.
 * [ ] Store discovery cards display store logo, name, locality distance, and top categories.

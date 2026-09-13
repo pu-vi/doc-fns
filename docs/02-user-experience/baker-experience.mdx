@@ -26,11 +26,11 @@ The baker journey in Flour n Sugar is intentionally engineered for **extreme sim
 
 ---
 
-## Onboarding & Store Setup (Under 5 Minutes)
+## Onboarding & Store Setup
 
 A major failure mode of traditional e-commerce platforms is onboarding friction: requiring merchant tax IDs, bank account routing, complex shipping matrices, and inventory policies upfront. 
 
-Flour n Sugar eliminates this via a lightweight 4-step setup wizard:
+Flour n Sugar uses a lightweight, resumable setup workflow. The first goal is a discoverable, presentable store; advanced commerce settings remain out of scope for MVP 1.
 
 ```text
 Step 1: Auth & Store Identity
@@ -38,21 +38,30 @@ Step 1: Auth & Store Identity
   ├── Store Name (e.g. "Whisk & Frost")
   └── Auto-suggested Unique Slug (/whisk-frost)
 
-Step 2: Business & Contact Channels
+Step 2: Location & Service Area
+  ├── City, State & Pincode
+  ├── Area / Locality and optional map coordinates
+  └── Delivery/service radius and home-baker privacy choice
+
+Step 3: Store Profile & Contact Channels
   ├── WhatsApp Number (Primary contact channel)
   ├── Secondary Phone / Calling number
   └── Instagram handle
+  └── About, specialties, working days, and lead time
 
-Step 3: Location & Service Info
-  ├── City, State & Pincode
-  ├── Area / Locality (e.g. "Aliganj, Lucknow")
-  └── Operating / Delivery Notes (e.g. "Order 24h in advance")
-
-Step 4: Add First Product & Publish
+Step 4: Add Products (Optional)
   ├── Upload 1–3 photos
   ├── Product Name & Category
   ├── Unit & Price
-  └── Tap [Publish Store]
+  └── Skip and add products later
+
+Step 5: Store Settings
+  ├── Pickup/delivery and order-acceptance preferences
+  └── Advance-notice guidance
+
+Step 6: Preview & Publish
+  ├── Review the public storefront
+  └── Publish now or save as a draft and resume later
 ```
 
 ---
@@ -64,7 +73,7 @@ Once onboarded, the baker accesses an intuitive, mobile-optimized dashboard:
 ### 1. Store Profile Management
 * **Visual Identity:** Upload store avatar/logo and custom hero banner.
 * **Store Bio:** Concise description of the bakery's philosophy, chef credentials, and signature specialties.
-* **Status Toggle:** Instantly toggle between `Published` (visible in directory) and `Unpublished` (draft or vacation mode).
+* **Status Control:** Publish when the storefront is ready; save work as a draft and resume setup later.
 
 ### 2. Product Catalog Management
 * **Categories:** Group products into custom categories (e.g., *Cakes, Brownies, Artisan Breads, Holiday Hampers*).
@@ -89,4 +98,3 @@ To keep the platform lightweight and protect bakers from cognitive overload, the
 * ❌ Real-time payment gateway onboarding (Razorpay/Stripe KYC)
 * ❌ Complex delivery fleet management
 * ❌ Invoicing, GST tax accounting, and ledger reconciliations
-

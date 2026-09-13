@@ -127,7 +127,7 @@ Minimum required telemetry events configured before launch:
 
 ## 16. Admin & Operations
 
-* [ ] Admin dashboard viewable by users with `role: ADMIN`.
+* [ ] Admin dashboard viewable only by users with `platformRole: ADMIN`.
 * [ ] View and search all registered users.
 * [ ] View and filter all stores (Draft, Published, Suspended).
 * [ ] View and audit all catalog products.
@@ -154,7 +154,7 @@ Minimum required telemetry events configured before launch:
 * [ ] Data retention policy defined.
 * [ ] Account and data deletion process documented and functional upon user request.
 * [ ] Privacy grievance contact details published (`privacy@flournsugar.com`).
-* [ ] Third-party data processors documented (Firebase, Vercel, Cloudflare, Resend).
+* [ ] Third-party data processors documented (Better Auth, Vercel, Cloudflare, Resend, and enabled OAuth providers).
 * [ ] Location data handling: coordinates stored only for discovery proximity and not shared with third parties.
 * [ ] Indian food safety considerations: Bakers prompted to acknowledge local FSSAI compliance requirements.
 
@@ -214,7 +214,7 @@ Execute this 20-step smoke test sequence immediately after production deployment
 13. [ ] Click "Inquire via WhatsApp" -> verify WhatsApp opens with prefilled product message.
 14. [ ] Edit product price in dashboard (change to ₹800) -> verify public update within 5 seconds.
 15. [ ] Change store theme accent color -> verify color reflects on public storefront.
-16. [ ] Perform a discovery search by city ("Lucknow") -> verify "Smoke Test Bakery" appears in listings.
+16. [ ] Perform a discovery search by the smoke-test store's chosen city -> verify "Smoke Test Bakery" appears in listings.
 17. [ ] Test storefront on physical mobile device -> verify smooth scrolling and layout.
 18. [ ] Test password reset request -> verify reset email arrives and link functions.
 19. [ ] Trigger a handled test error -> verify error appears in Sentry dashboard.
