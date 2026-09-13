@@ -2,7 +2,7 @@
 
 [![CI Build & Typecheck](https://github.com/vishal-/doc-fns/actions/workflows/ci.yml/badge.svg)](https://github.com/vishal-/doc-fns/actions/workflows/ci.yml)
 [![Docusaurus](https://img.shields.io/badge/built%20with-Docusaurus%20v3-green.svg)](https://docusaurus.io/)
-[![Node.js](https://img.shields.io/badge/node-%3E%3D20.0-blue.svg)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D24.0-blue.svg)](https://nodejs.org/)
 [![Live Staging](https://img.shields.io/badge/staging-puza.shop-orange.svg)](https://puza.shop)
 
 > **A community and discovery platform for local, home, and independent bakers.**
