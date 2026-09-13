@@ -1,7 +1,7 @@
 {
   "label": "Roadmap & Long-Term Vision",
   "position": 5,
-  "collapsed": false,
+  "collapsed": true,
   "link": {
     "type": "generated-index",
     "description": "The 5-phase evolutionary roadmap from discovery directory to an all-encompassing baking ecosystem."
