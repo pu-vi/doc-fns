@@ -1,0 +1,10 @@
+{
+  "label": "Technical Architecture",
+  "position": 7,
+  "collapsed": true,
+  "link": {
+    "type": "generated-index",
+    "description": "Tech stack breakdown, multi-tenant routing, data modeling, and operational infrastructure."
+  }
+}
+

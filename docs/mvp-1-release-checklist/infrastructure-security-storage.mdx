@@ -1,0 +1,159 @@
+---
+id: infrastructure-security-storage
+title: Infrastructure, Security & Storage
+sidebar_position: 3
+---
+
+# Infrastructure, Security & Storage
+
+Comprehensive verification checklists for Sections 7, 8, 9, 10, 18, 19, and 20 covering PostgreSQL integrity, API security boundaries, Cloudflare R2 object storage, multi-environment isolation, and disaster recovery.
+
+---
+
+## 7. Database & Data Integrity
+
+* [ ] Production PostgreSQL database provisioned in isolated VPC with high availability.
+* [ ] Production schema migrated via Prisma cleanly with zero manual SQL interventions.
+* [ ] Migration history verified clean (`prisma migrate status`).
+* [ ] No development-only test data exists in production database.
+* [ ] Database seed scripts separated from schema migration pipelines.
+* [ ] **Critical Production Indexes Verified:**
+  * [ ] Unique B-Tree index on `Store.slug`
+  * [ ] Unique index on `Store.userId`
+  * [ ] Compound index on `[Store.latitude, Store.longitude]` for geospatial queries
+  * [ ] Index on `Store.city` and `Store.status`
+  * [ ] Index on `CatalogProduct.slug`
+  * [ ] Index on `StoreProduct.storeId`
+  * [ ] Index on `StoreProduct.categoryId`
+  * [ ] Index on status fields (`StoreStatus`, `isAvailable`)
+* [ ] Unique constraints verified across database tables.
+* [ ] Foreign keys and referential integrity rules verified.
+* [ ] Cascade delete behavior reviewed (e.g., deleting store cascades categories and products).
+* [ ] Nullable vs required fields reviewed across models.
+* [ ] Transaction boundaries reviewed for critical multi-table writes.
+* [ ] Race conditions reviewed for critical writes (e.g., slug registration collisions).
+* [ ] Database connection pooling configured (PgBouncer / Prisma Accelerate).
+* [ ] Database connection limits verified against peak serverless concurrency.
+* [ ] Automated daily database backups enabled with point-in-time recovery (PITR).
+* [ ] Backup restoration rehearsal successfully completed on staging environment.
+
+---
+
+## 8. API & Backend Security
+
+* [ ] All production API endpoints documented with request/response schemas.
+* [ ] Authentication enforced on all private routes via verified JWT tokens.
+* [ ] Authorization enforced: users cannot query or mutate records outside their tenant.
+* [ ] Input validation enforced using strict Zod schemas on all API endpoints.
+* [ ] Output validation and serialization ensure sensitive fields are never exposed.
+* [ ] Consistent error response structures across all endpoints:
+  ```json
+  { "error": { "code": "VALIDATION_FAILED", "message": "Invalid price variant" } }
+  ```
+* [ ] HTTP status codes reviewed (`200 OK`, `201 Created`, `400 Bad Request`, `401 Unauthorized`, `403 Forbidden`, `404 Not Found`, `429 Too Many Requests`).
+* [ ] Rate limiting active on search queries, image uploads, and authentication attempts.
+* [ ] Request body size limits enforced (`< 1MB` for JSON, `< 5MB` for media).
+* [ ] File upload limits enforced.
+* [ ] SQL injection protection validated via Prisma parameterized queries.
+* [ ] Cross-Site Scripting (XSS) protection enforced by framework sanitization.
+* [ ] CSRF mitigation strategy reviewed for mutation endpoints.
+* [ ] CORS configuration restricts API access to authorized platform domains.
+* [ ] API secrets removed from all client bundles and source code.
+* [ ] Production environment variables configured in deployment dashboard.
+* [ ] No test or debug endpoints exposed in production builds.
+
+---
+
+## 9. Security & Secrets Management
+
+### Application Security
+* [ ] Production HTTPS enforced with HSTS headers.
+* [ ] Secure cookies configured (`Secure`, `HttpOnly`, `SameSite=Lax` or `Strict`).
+* [ ] Authentication session security and token rotation verified.
+* [ ] Password handling delegated entirely to Firebase Authentication.
+* [ ] Authorization regression tests executed.
+* [ ] Insecure Direct Object Reference (IDOR) testing completed across all tenant endpoints.
+* [ ] Mass-assignment testing completed (unauthorized role escalation blocked).
+* [ ] Input sanitization on user-supplied markdown or text.
+* [ ] File upload validation: MIME-type checked against file signature (magic bytes).
+* [ ] Maximum file size enforced at edge before proxying to storage.
+* [ ] Dependency vulnerability scan (`npm audit`) clean of critical CVEs.
+
+### Secrets Management
+* [ ] Database credentials secured in encrypted environment store.
+* [ ] Firebase Admin SDK private keys secured.
+* [ ] Cloudflare R2 storage access keys secured.
+* [ ] Transactional email credentials secured.
+* [ ] Geolocation / Maps API keys restricted by HTTP referrer and IP.
+* [ ] Analytics API credentials reviewed.
+* [ ] No `.env` files committed to Git repositories.
+* [ ] Git commit history verified free of any leaked keys or tokens.
+* [ ] Production secrets completely isolated from staging and local development.
+
+---
+
+## 10. Images & File Storage (Cloudflare R2)
+
+* [ ] Cloudflare R2 object storage bucket configured with custom public CDN domain (`pub-cdn.flournsugar.com`).
+* [ ] Secure presigned upload URLs generated server-side.
+* [ ] Image upload flow functions reliably on mobile and desktop networks.
+* [ ] Image resizing and optimization: WebP/AVIF transformations active.
+* [ ] Maximum image dimensions enforced (`2000px` max width).
+* [ ] Maximum file size enforced (`5MB` max upload).
+* [ ] Unsupported file types (executables, SVGs with scripts) strictly rejected.
+* [ ] Image deletion workflow removes files from storage upon product deletion.
+* [ ] Orphaned image cleanup strategy defined for abandoned draft uploads.
+* [ ] Public vs private bucket access policies verified.
+* [ ] Cloudflare CDN caching headers configured (`Cache-Control: public, max-age=31536000`).
+* [ ] Broken image fallbacks display elegant placeholder illustrations.
+* [ ] Mobile image rendering performance tested on low-bandwidth connections.
+
+---
+
+## 18. Infrastructure & Deployment
+
+### Environments Isolation
+* [ ] **Development:** Local developer environment.
+* [ ] **Staging:** Isolated mirror on `puza.shop` connected to staging DB and storage.
+* [ ] **Production:** High-availability cluster on `flournsugar.com`.
+* [ ] Environment variables strictly separated between environments.
+* [ ] Production database completely isolated from staging.
+* [ ] Production object storage bucket isolated from staging uploads.
+* [ ] Production Firebase Auth project isolated from test accounts.
+
+### Deployment & CI Pipeline
+* [ ] Continuous Integration (CI) pipeline passes on every pull request.
+* [ ] Production build succeeds cleanly from a pristine repository checkout.
+* [ ] Automated test suite runs and passes before deployment step.
+* [ ] Database migration step defined and verified in CI workflow.
+* [ ] Instant deployment rollback strategy verified in Vercel console.
+* [ ] Health check endpoint (`/api/health`) validates DB connectivity and response time.
+* [ ] Zero / minimal downtime atomic deployments confirmed.
+* [ ] Deployment audit logs available to engineering team.
+
+---
+
+## 19. Domain & DNS Configuration
+
+* [ ] Production apex domain (`flournsugar.com`) configured with DNS provider.
+* [ ] Canonical `www` redirect behavior decided (redirect `www.flournsugar.com` to `flournsugar.com`).
+* [ ] Automated SSL/TLS certificates active with TLS 1.3.
+* [ ] DNS records (A, CNAME, TXT) verified across all authoritative nameservers.
+* [ ] Tenant URL routing verified: `flournsugar.com/webake` loads correctly without subdomain collision.
+* [ ] Transactional email domain DNS configured (SPF, DKIM, DMARC).
+* [ ] Global DNS propagation verified across major worldwide nodes.
+* [ ] Legacy or staging redirects verified to prevent traffic leaks.
+
+---
+
+## 20. Backup & Disaster Recovery
+
+* [ ] Automated daily PostgreSQL database snapshots enabled.
+* [ ] Backup retention policy configured (30-day retention).
+* [ ] Complete database restoration rehearsal executed on staging database.
+* [ ] Object storage (Cloudflare R2) bucket versioning enabled.
+* [ ] Critical environment variables and configuration backed up in encrypted vault.
+* [ ] Disaster recovery runbook documented with step-by-step instructions.
+* [ ] Database migration rollback scripts prepared for emergency rollbacks.
+* [ ] Production incident recovery procedure documented with communication channels.
+* [ ] Designated Incident Response Owner identified for launch week.

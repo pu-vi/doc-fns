@@ -1,0 +1,109 @@
+---
+id: discovery-and-seo
+title: Discovery & SEO Architecture
+sidebar_position: 4
+---
+
+# Discovery & SEO Architecture
+
+Search Engine Optimization (SEO) and programmatic local discovery are not supplementary marketing tactics for Flour n Sugar; they are core architectural pillars designed into the routing and rendering pipeline.
+
+---
+
+## Canonical URL Hierarchy
+
+The platform exposes an indexed, crawlable, and semantic URL structure:
+
+```text
+/                                    -> Global Landing Page
+/bakers                              -> National Baker Directory
+/bakers/[store-slug]                 -> Direct Baker Storefront (/cakesncookies)
+
+/categories                          -> Global Category Directory
+/categories/[category-slug]          -> Global Category Listing (/categories/sourdough)
+
+/locations                           -> City & State Directory
+/locations/[city-slug]               -> City Landing Page (/locations/lucknow)
+/locations/[city-slug]/bakers        -> City Baker Directory (/locations/lucknow/bakers)
+/locations/[city-slug]/[category]    -> Programmatic Local Category (/locations/lucknow/eggless-cakes)
+
+/products/[product-slug]             -> Featured Product Detail View
+```
+
+---
+
+## Programmatic Local SEO Engine
+
+By combining geographic locations with baking categories, Flour n Sugar systematically targets high-intent long-tail search queries:
+
+| Search Intent | Target Programmatic Route | Dynamic Page Title |
+| :--- | :--- | :--- |
+| "Home bakers in Lucknow" | `/locations/lucknow/bakers` | Top Home Bakers & Bakeries in Lucknow \| Flour n Sugar |
+| "Eggless cakes in Noida" | `/locations/noida/eggless-cakes` | Best Eggless Cakes in Noida — Order from Local Bakers |
+| "Sourdough bread Bangalore" | `/locations/bangalore/sourdough` | Artisanal Sourdough Bread in Bangalore \| Local Bakers |
+| "Custom birthday cakes Jaipur" | `/locations/jaipur/custom-cakes` | Custom Birthday Cakes in Jaipur \| Portfolios & Prices |
+
+---
+
+## Structured Data (Schema.org) Markup
+
+To earn Google Rich Snippets (Star ratings, Baker price ranges, Breadcrumbs, and LocalBusiness cards), every public page injects JSON-LD structured data:
+
+### 1. Storefront LocalBusiness Schema
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "Bakery",
+  "name": "Whisk & Frost Artisanal Bakes",
+  "image": "https://pub-cdn.flournsugar.com/stores/whisk-frost/cover.jpg",
+  "url": "https://flournsugar.com/whisk-frost",
+  "telephone": "+919876543210",
+  "priceRange": "₹₹",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Sector B, Mahanagar",
+    "addressLocality": "Lucknow",
+    "addressRegion": "Uttar Pradesh",
+    "postalCode": "226006",
+    "addressCountry": "IN"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 26.8654,
+    "longitude": 80.9462
+  }
+}
+```
+
+### 2. Product Schema
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Dark Belgian Truffle Cake (1kg)",
+  "image": "https://pub-cdn.flournsugar.com/products/truffle.jpg",
+  "description": "Rich 54% dark chocolate ganache layered between moist sponge.",
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": "INR",
+    "price": "950",
+    "availability": "https://schema.org/InStock",
+    "seller": {
+      "@type": "Organization",
+      "name": "Whisk & Frost"
+    }
+  }
+}
+```
+
+---
+
+## Performance & Core Web Vitals Targets
+
+Search engines heavily penalize slow-loading pages, especially on mobile networks in India. Public routes must meet strict thresholds:
+
+* **LCP (Largest Contentful Paint):** `< 2.0s` (Aggressive WebP image optimization via Cloudflare R2 + CDN).
+* **CLS (Cumulative Layout Shift):** `< 0.05` (Explicit aspect-ratio containers for all product images).
+* **FID / INP (Interaction to Next Paint):** `< 100ms` (Zero heavy client-side JavaScript execution on initial page load).
+* **Static Generation (SSG / ISR):** Public city directories and storefront profiles are statically pre-rendered and revalidated on background updates.
+

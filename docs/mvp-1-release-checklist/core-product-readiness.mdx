@@ -1,0 +1,172 @@
+---
+id: core-product-readiness
+title: Core Product & Module Readiness
+sidebar_position: 2
+---
+
+# Core Product & Module Readiness
+
+Exhaustive verification checklists for Sections 1 through 6 covering product scope, authentication, user profiles, store management, catalogs, measurement units, storefront theming, and the discovery engine.
+
+---
+
+## 1. Product Scope & Release Readiness
+
+* [ ] Freeze MVP 1 feature scope against late additions.
+* [ ] Explicitly document features **not** in MVP 1 (no payments, no cart checkout, no delivery fleet, no inventory count).
+* [ ] Verify the 11 production user journeys end-to-end:
+  * [ ] New customer signup and email login
+  * [ ] Customer profile view and update
+  * [ ] Discover nearby stores and bakers via geolocation
+  * [ ] Browse baker storefront via custom slug (`/:storeSlug`)
+  * [ ] Browse products by category with dietary filters
+  * [ ] Store owner registration via Google OAuth or Email
+  * [ ] Store onboarding wizard completion (< 5 mins)
+  * [ ] Store profile management (bio, address, hours, cover image)
+  * [ ] Product & catalog management (CRUD, categories, price variants)
+  * [ ] Storefront theme selection and accent color customization
+  * [ ] Public store URL sharing and preview
+* [ ] Complete end-to-end acceptance testing for each user journey.
+* [ ] Resolve all P0 and P1 blocker bugs before deployment.
+* [ ] Document known MVP limitations in user-facing release notes.
+
+---
+
+## 2. Authentication & User Module
+
+### Authentication
+* [ ] Email/password authentication verified in production mode.
+* [ ] Email verification workflow sends valid tokens and updates verified status.
+* [ ] Login and logout state management works across browser tabs.
+* [ ] Forgot password / reset password email workflow functions correctly.
+* [ ] Session token expiration and background auto-refresh tested without session drops.
+* [ ] Multiple-device concurrent sessions behave predictably.
+* [ ] Unauthorized routes (`/dashboard/*`, `/settings/*`) properly redirect to `/login`.
+* [ ] Protected API endpoints (`/api/store/*`, `/api/products/*`) reject unauthenticated requests with `401 Unauthorized`.
+* [ ] Rate limiting and brute-force protection active on `/api/auth/*`.
+* [ ] Authentication error messages do not leak system internals, database errors, or account existence.
+
+### User
+* [ ] User profile record created automatically upon initial Firebase auth signup.
+* [ ] User profile update (Full Name, Phone Number, Avatar) persists to PostgreSQL.
+* [ ] Profile image upload and optimization verified.
+* [ ] User-to-store ownership relationship strictly validated (1:1 constraint for MVP).
+* [ ] Account deletion and deactivation strategy defined and tested.
+* [ ] User input data validation enforced via Zod schemas.
+
+---
+
+## 3. Store / Baker Module
+
+* [ ] Store creation flow initializes with unique UUID and assigned `userId`.
+* [ ] Store onboarding wizard collects all required baseline fields:
+  * [ ] Store type (Home Baker, Boutique Patisserie, Cake Studio)
+  * [ ] Store name
+  * [ ] Contact phone and WhatsApp number
+  * [ ] Contact email
+  * [ ] Physical address / pickup landmark
+  * [ ] City, state, and pincode
+  * [ ] Latitude and longitude coordinates
+  * [ ] Store description / bio
+  * [ ] Store logo and hero cover image
+  * [ ] Store custom slug
+* [ ] Store slug uniqueness validated asynchronously in real time during input.
+* [ ] Reserved slug blacklist enforced (`admin`, `api`, `dashboard`, `auth`, `login`, `terms`, `privacy`).
+* [ ] Store publish and unpublish toggle functions instantly:
+  * [ ] `DRAFT` stores render a branded "Under Construction" placeholder to visitors.
+  * [ ] `PUBLISHED` stores appear in search results and directory pages.
+* [ ] Store owner permissions strictly enforced:
+  * [ ] Store owner can edit only their own store profile.
+  * [ ] Store owner cannot view or access another owner's private dashboard.
+* [ ] Store update flow persists changes to database without overwriting unmodified fields.
+* [ ] Store deletion/deactivation behavior (soft delete via `status: SUSPENDED`).
+* [ ] Public storefront renders at `flournsugar.com/:storeSlug`.
+* [ ] Non-existent store slug displays a helpful 404 page with nearby recommendations.
+* [ ] Store SEO metadata (meta title, description, Open Graph tags) generated dynamically.
+
+---
+
+## 4. Product & Catalog Module
+
+### Catalog Foundation
+* [ ] Seed data for product categories finalized (*Celebration Cakes, Brownies, Cookies, Sourdough, Cupcakes, Tea Cakes, Hampers*).
+* [ ] Product category slugs validated for URL safety.
+* [ ] Duplicate categories prevented within the same store.
+* [ ] Catalog seed script tested on fresh staging database.
+
+### Store Products
+* [ ] Store owner can add new products with photos, title, description, and categories.
+* [ ] Store owner can edit existing product details and pricing.
+* [ ] Store owner can deactivate products (toggle `isAvailable: false`) without deleting order history.
+* [ ] Product ordering / display order sorting functions reliably in dashboard.
+* [ ] Price and quantity validation prevents negative, non-numeric, or zero values.
+* [ ] Public product cards render photos, title, price, units, and availability badge.
+* [ ] Product 404 / inactive behavior displays graceful notices.
+
+### Measurement Units & Pricing Semantics
+Validate supported Indian bakery units:
+* [ ] **Weight:** `KG` (e.g., `0.5 kg`, `1 kg`, `1.5 kg`)
+* [ ] **Weight:** `GRAM` (e.g., `250 g`, `500 g`)
+* [ ] **Traditional Weight:** `POUND` (e.g., `1 lb`, `2 lbs`)
+* [ ] **Count:** `PIECE` (e.g., `1 pc`, `6 pcs`)
+* [ ] **Package:** `BOX` (e.g., `Box of 4`, `Box of 6`, `Box of 12`)
+* [ ] **Package:** `PACK` (e.g., `Pack of 2`, `Pack of 8`)
+* [ ] **Portion:** `SLICE` (e.g., `Per Slice`)
+* [ ] **Portion:** `SERVING` (e.g., `Serves 6–8`)
+* [ ] **Dimensions:** `INCH` (e.g., `6 inch dia`)
+* [ ] **Volume:** `ML` (e.g., `200 ml`, `500 ml`)
+* [ ] **Volume:** `LITER` (e.g., `1 liter`)
+* [ ] Display formatting standard verified (`500 g`, `1 kg`, `6 pcs`).
+* [ ] Pricing semantics verified: **Fixed price for package** vs **Price starting from**.
+* [ ] Test decimal quantities where applicable (e.g., `0.5 kg`, `1.5 kg`).
+
+---
+
+## 5. Storefront / Tenant Experience
+
+* [ ] Tenant URL routing scheme verified (`flournsugar.com/:storeSlug`).
+* [ ] Storefront loads correctly on both desktop and mobile devices.
+* [ ] Theme palette selection works (Warm Rose, Golden Honey, Forest Sage, Espresso, Charcoal).
+* [ ] Selected theme and accent color persist across page reloads.
+* [ ] Invalid or missing theme configuration falls back safely to default palette.
+* [ ] Store branding (logo, cover banner, chef bio) displayed cleanly.
+* [ ] Product and category navigation filter items dynamically.
+* [ ] Empty store state renders helpful onboarding notice to the owner.
+* [ ] Empty category state displays "No products listed in this category yet."
+* [ ] Unpublished store renders friendly "Baker is currently baking something special" notice.
+* [ ] Invalid store slug renders custom 404 with link back to city directory.
+
+### Responsive Viewport QA Matrix
+Test and sign off each layout breakpoint:
+* [ ] **320px:** iPhone SE / small Android devices (no horizontal overflow, thumb-friendly tap targets).
+* [ ] **375px:** iPhone mini / standard mobile viewports.
+* [ ] **390px:** iPhone 13/14/15 standard viewports.
+* [ ] **414px:** iPhone Plus / Max viewports.
+* [ ] **768px:** iPad portrait / small tablet devices.
+* [ ] **1024px:** iPad landscape / tablet desktop viewports.
+* [ ] **1280px+:** Full desktop displays with persistent sidebar navigation.
+* [ ] **Cross-Browser Verification:**
+  * [ ] iOS Safari
+  * [ ] Android Chrome
+  * [ ] Desktop Google Chrome
+  * [ ] Desktop Apple Safari
+  * [ ] Desktop Mozilla Firefox
+
+---
+
+## 6. Discovery & Community Module
+
+* [ ] Landing page hero with instant search bar and city selector.
+* [ ] Geolocation permission flow:
+  * [ ] User grants location: Browser coordinates used to calculate nearby bakers.
+  * [ ] User denies location: Graceful prompt to select city/locality manually.
+  * [ ] Location service unavailable: Instant fallback to default city directory (Lucknow).
+* [ ] Nearby stores query calculates Haversine distance from coordinates.
+* [ ] Radius filter (5 km, 10 km, 25 km, All City) filters bakers accurately.
+* [ ] Store discovery cards display store logo, name, locality distance, and top categories.
+* [ ] Store sorting options (Distance, Alphabetical, Recently Added).
+* [ ] Category and product discovery (browse all bakers offering "Sourdough" or "Eggless").
+* [ ] Programmatic local discovery pages (`/locations/lucknow/sourdough`).
+* [ ] Empty search results state offers suggestions to expand radius or browse popular categories.
+* [ ] Invalid search query handled safely without 500 server errors.
+* [ ] Pagination / infinite scrolling behaves reliably on mobile networks.

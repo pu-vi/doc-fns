@@ -1,0 +1,49 @@
+---
+id: design-principles
+title: Core Design Principles
+sidebar_position: 3
+---
+
+# Core Design Principles
+
+Every product feature, user experience decision, and architectural boundary in Flour n Sugar adheres to eight fundamental design principles.
+
+---
+
+## The 8 Principles
+
+### 1. Local First
+Baking is fundamentally a hyper-local, perishable, and community-driven craft. The platform must feel warm, neighborhood-centric, and personal—never like an anonymous, industrial drop-shipping marketplace. Geographic context is primary in discovery, search filters, and storefront presentation.
+
+### 2. Radical Simplicity for Bakers
+Most home and independent bakers are passionate artisans, not software administrators. Onboarding, profile creation, and catalog maintenance must require zero technical skills. Any workflow that takes more than 3 minutes to complete must be simplified.
+
+### 3. Discovery Before Commerce
+Customers must be able to explore products, learn about bakers, and view transparent pricing without having to create an account, log in, or install a native app. Friction in the exploration phase must be zero.
+
+### 4. Existing Channels First
+Rather than forcing bakers and customers into a proprietary in-app chat or custom notification inbox during early phases, the platform leverages established habits. Deep integration with **WhatsApp**, **direct phone calling**, **SMS**, and **Instagram links** reduces resistance and builds immediate trust.
+
+### 5. Progressive Complexity
+Do not build enterprise features until the core marketplace proves demand. Advanced tools such as inventory synchronizers, payment splitters, automated route optimization, and commercial analytics are deferred until the discovery and storefront flywheel is spinning.
+
+### 6. Mobile First
+Over 85% of target customers and home bakers access the web primarily via smartphones. All storefront layouts, discovery search interfaces, and management dashboards are engineered and QA-tested from 320px screen widths up to high-density desktop displays.
+
+### 7. SEO as a First-Class Citizen
+Local discovery cannot depend solely on paid marketing. Public baker pages, category listings, city directories, and product viewports are statically generated or server-rendered with comprehensive Open Graph tags, canonical links, and Schema.org structured data to capture long-tail organic search queries.
+
+### 8. Multi-Tenant from Day One
+Even when the feature set is lightweight, the underlying database and routing architecture treats each baker as an isolated tenant. This ensures clean data isolation, independent customization options, and seamless future transitions to custom domains (`mybakery.com`).
+
+---
+
+## Principle Application Matrix
+
+| Scenario | What We Do | What We Avoid |
+| :--- | :--- | :--- |
+| **Product Ordering** | Direct WhatsApp button with pre-filled product details. | Requiring card checkout or upfront account registration. |
+| **Storefront Customization** | Curated theme presets, font pairings, and accent color pickers. | Complex, fragile drag-and-drop page builders. |
+| **Baker Onboarding** | Step-by-step wizard capturing store name, city, phone, and 1 product. | Multi-page forms demanding GSTIN, PAN, bank accounts upfront. |
+| **Search & Discovery** | Fast location-based radius queries and category tags. | Forcing exact GPS coordinates or app download barriers. |
+

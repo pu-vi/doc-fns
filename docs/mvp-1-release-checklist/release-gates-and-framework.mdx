@@ -1,0 +1,79 @@
+---
+id: release-gates-and-framework
+title: Master Release Gates & Framework
+sidebar_position: 1
+---
+
+# Master Release Gates & Framework
+
+To ensure the production release of **Flour n Sugar MVP 1** delivers an exceptional user experience while keeping engineering velocity high, release readiness is governed by **10 Hard Release Gates**, a prioritized **MoSCoW Framework**, and an end-to-end **Traceability Matrix**.
+
+---
+
+## The 10 Hard Release Gates
+
+Before MVP 1 is deployed to production, every item in this table must be fully satisfied and signed off. A failure in any one of these 10 gates constitutes an automatic release blocker:
+
+| Gate | Critical Requirement | Acceptance Verification Criteria | Owner | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| **1. 🔐 Auth & Identity** | Email/password, Google OAuth, session refresh, and password reset work flawlessly in production. | Clean test signups, session persistence across tabs, rate-limited auth endpoints. | Auth Lead | `READY` |
+| **2. 👤 Tenant Isolation** | Strict authorization boundaries prevent Store A from accessing or mutating Store B's resources. | Automated IDOR and multi-tenant security regression tests passing with 0 vulnerabilities. | SecOps | `READY` |
+| **3. 🏪 Store Onboarding** | A baker can complete the 4-step wizard and publish a live storefront in under 5 minutes. | End-to-end user testing on both mobile and desktop without manual DB intervention. | Product | `READY` |
+| **4. 🛍️ Catalog Management** | Products, categories, images, prices, and Indian units (KG, g, pcs) create and display correctly. | Full CRUD testing across 10 sample bakery menus with varied price variants. | QA Lead | `READY` |
+| **5. 💬 WhatsApp Linkage** | Click-to-chat opens with pre-filled context (product, variant, price, storefront URL). | Verified on iOS WhatsApp, Android WhatsApp, and WhatsApp Web. | Growth | `READY` |
+| **6. 📍 Local Discovery** | Geolocation detection and manual city/locality searches return accurate nearby bakers. | Tested across multiple test coordinates (Lucknow central, outer ring, no results fallback). | Backend | `READY` |
+| **7. 📱 Mobile First QA** | Storefronts and discovery browse smoothly on 320px–414px mobile viewports without horizontal scrolling. | Responsive QA passed on iOS Safari and Android Chrome. | Frontend | `READY` |
+| **8. 🗄️ Database Integrity** | PostgreSQL migrations executed, connection pooling configured, automated daily backups active. | Test restoration from an automated database snapshot successfully completed. | DevOps | `READY` |
+| **9. 🚨 Observability** | Sentry error monitoring captures uncaught exceptions; structured logs emit request IDs. | Deliberately triggered test error captured in dashboard with stack trace. | SRE Lead | `READY` |
+| **10. 🔄 Disaster Rollback** | Immediate deployment rollback procedure documented and rehearsed on staging. | Automated CI rollback tested on staging environment within `< 3 minutes`. | DevOps | `READY` |
+
+---
+
+## MoSCoW Prioritization Framework
+
+To prevent the classic problem where a production checklist endlessly delays launch, all release items across the platform are categorized into four clear priority statuses:
+
+```text
+┌─────────────────────────┐
+│     Must Have (P0)      │ -> Non-negotiable release blockers (The 10 Gates). Cannot launch without.
+├─────────────────────────┤
+│     Should Have (P1)    │ -> Critical improvements targeted for Day 1–3 post-launch hotfixes.
+├─────────────────────────┤
+│     Nice to Have (P2)   │ -> Quality-of-life enhancements scheduled for MVP 1.1 sprint.
+├─────────────────────────┤
+│      Post-MVP (P3)      │ -> Deferred to Phase 2 (Native Ordering, Payments, Delivery).
+└─────────────────────────┘
+```
+
+---
+
+## Traceability Matrix Architecture
+
+To connect documentation directly to engineering implementation and automated test suites:
+
+```text
+Requirement ───> Module Code ───> Automated Test ───> Production Check ───> Gate Status
+```
+
+| Requirement ID | Module / Component | Primary Source Path | Automated Test Suite | Production Gate |
+| :--- | :--- | :--- | :--- | :--- |
+| **REQ-AUTH-01** | User Authentication & Sessions | `apps/web/auth/*` | `auth.test.ts` | **Gate 1 (Auth)** |
+| **REQ-AUTH-02** | Multi-Tenant Authorization Guard | `middleware.ts`, `api/store/*` | `tenant-guard.test.ts` | **Gate 2 (Isolation)** |
+| **REQ-STORE-01** | Store Onboarding Wizard | `components/onboarding/*` | `onboarding.spec.ts` | **Gate 3 (Store)** |
+| **REQ-CAT-01** | Catalog CRUD & Indian Units | `components/catalog/*` | `catalog-units.test.ts` | **Gate 4 (Catalog)** |
+| **REQ-CHAT-01** | WhatsApp Context Deep Links | `lib/whatsapp.ts` | `whatsapp-link.test.ts` | **Gate 5 (WhatsApp)** |
+| **REQ-GEO-01** | Geolocation & Radius Query | `api/discovery/nearby` | `haversine.test.ts` | **Gate 6 (Discovery)** |
+| **REQ-RESP-01** | Mobile Responsive Layouts | `components/storefront/*` | `playwright/mobile.spec.ts` | **Gate 7 (Mobile)** |
+| **REQ-DATA-01** | PostgreSQL Schema & Migration | `prisma/schema.prisma` | `migration.test.ts` | **Gate 8 (Database)** |
+| **REQ-OBS-01** | Sentry & Structured Logging | `lib/logger.ts`, `sentry.config` | `sentry-ping.test.ts` | **Gate 9 (Observability)** |
+| **REQ-REL-01** | Vercel Rollback & Healthcheck | `.github/workflows/deploy.yml` | `healthcheck.spec.ts` | **Gate 10 (Rollback)** |
+
+---
+
+## Release Sign-Off Protocol
+
+Release to production requires formal sign-off from three leads:
+
+1. **Engineering Lead:** Verifies Gates 1, 2, 8, 9, 10 (Auth, Multi-Tenancy, Database, Observability, Rollback).
+2. **Product Lead:** Verifies Gates 3, 4, 5, 6, 7 (Onboarding, Catalog, WhatsApp, Discovery, Mobile UX).
+3. **Operations & QA Lead:** Verifies end-to-end regression test pass rate (100% of P0 tests passing).

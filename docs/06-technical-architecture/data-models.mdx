@@ -1,0 +1,207 @@
+---
+id: data-models
+title: Data Models & Schema Design
+sidebar_position: 3
+---
+
+# Data Models & Schema Design
+
+The database schema is modeled in PostgreSQL using Prisma ORM. It establishes clean relational boundaries between users, stores, catalogs, products, and categories.
+
+---
+
+## Entity Relationship Overview
+
+```text
+┌─────────────────┐
+│      User       │
+│  (Auth & Role)  │
+└────────┬────────┘
+         │ 1:1
+         ▼
+┌─────────────────┐ 1:N ┌─────────────────┐
+│      Store      │────>│  StoreCategory  │
+│  (Tenant Slug)  │     │ (Custom groups) │
+└────────┬────────┘     └────────┬────────┘
+         │ 1:N                   │ 1:N
+         ▼                       ▼
+┌─────────────────┐ 1:N ┌─────────────────┐
+│  StoreProduct   │<────│ ProductVariant  │
+│  (Title, Desc)  │     │ (Price & Units) │
+└─────────────────┘     └─────────────────┘
+```
+
+---
+
+## Core Prisma Schema Specification
+
+```prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  USER
+  BAKER
+  ADMIN
+}
+
+enum StoreStatus {
+  DRAFT
+  PENDING_REVIEW
+  PUBLISHED
+  SUSPENDED
+}
+
+enum UnitType {
+  KG
+  GRAM
+  POUND
+  PIECE
+  BOX
+  PACK
+  SLICE
+  SERVING
+  INCH
+  ML
+  LITER
+}
+
+model User {
+  id            String    @id @default(uuid())
+  firebaseUid   String    @unique
+  email         String    @unique
+  fullName      String?
+  phone         String?
+  role          Role      @default(USER)
+  store         Store?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([email])
+}
+
+model Store {
+  id              String          @id @default(uuid())
+  userId          String          @unique
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  slug            String          @unique
+  name            String
+  tagline         String?
+  description     String?
+  logoUrl         String?
+  coverUrl        String?
+  status          StoreStatus     @default(DRAFT)
+  
+  // Contact & Social
+  whatsappNumber  String
+  phoneNumber     String?
+  email           String?
+  instagramHandle String?
+  
+  // Location
+  address         String?
+  city            String
+  state           String
+  pincode         String
+  latitude        Float?
+  longitude       Float?
+  
+  // Relations
+  categories      StoreCategory[]
+  products        StoreProduct[]
+  theme           StoreTheme?
+  
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([slug])
+  @@index([city])
+  @@index([status])
+  @@index([latitude, longitude])
+}
+
+model StoreCategory {
+  id          String         @id @default(uuid())
+  storeId     String
+  store       Store          @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  name        String
+  displayOrder Int           @default(0)
+  products    StoreProduct[]
+  
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@unique([storeId, name])
+  @@index([storeId])
+}
+
+model StoreProduct {
+  id            String           @id @default(uuid())
+  storeId       String
+  store         Store            @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  categoryId    String?
+  category      StoreCategory?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  
+  title         String
+  description   String?
+  images        String[]
+  isEggless     Boolean          @default(false)
+  isVegan       Boolean          @default(false)
+  isGlutenFree  Boolean          @default(false)
+  isAvailable   Boolean          @default(true)
+  displayOrder  Int              @default(0)
+  
+  variants      ProductVariant[]
+  
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  @@index([storeId])
+  @@index([categoryId])
+}
+
+model ProductVariant {
+  id          String        @id @default(uuid())
+  productId   String
+  product     StoreProduct  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  name        String?       // e.g., "500g", "Box of 6"
+  price       Decimal       @db.Decimal(10, 2)
+  unit        UnitType
+  unitQuantity Float        @default(1.0)
+  isDefault   Boolean       @default(false)
+  
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([productId])
+}
+
+model StoreTheme {
+  id          String   @id @default(uuid())
+  storeId     String   @unique
+  store       Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  
+  primaryColor   String  @default("#E17055")
+  fontFamily     String  @default("Inter")
+  bannerStyle    String  @default("STANDARD")
+  
+  updatedAt      DateTime @updatedAt
+}
+```
+
+---
+
+## Indexing Strategy & Geospatial Lookups
+
+* **Location Indexing:** Indexing `[latitude, longitude]` and `[city]` supports sub-50ms radius queries for local discovery searches.
+* **Slug Lookups:** A unique B-Tree index on `Store.slug` guarantees `O(1)` lookup times for incoming storefront requests.
+* **Soft Deletion & Moderation:** The `StoreStatus` enum enables instant platform deactivation of problematic content without permanent data loss.
+

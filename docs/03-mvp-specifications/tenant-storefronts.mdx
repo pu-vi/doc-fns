@@ -1,0 +1,88 @@
+---
+id: tenant-storefronts
+title: Tenant Storefront Architecture
+sidebar_position: 2
+---
+
+# Tenant Storefront Architecture
+
+Every baker on Flour n Sugar is granted an independent tenant storefront, designed to operate as a branded micro-website.
+
+---
+
+## URL Structure & Tenant Routing
+
+Storefronts are routed through path-based slug conventions on the primary domain:
+
+```text
+https://flournsugar.com/:storeSlug
+```
+
+Examples:
+* `https://flournsugar.com/webake`
+* `https://flournsugar.com/cakesncookies`
+* `https://flournsugar.com/sweetcravings`
+
+### Routing Rules & Slug Enforcement
+1. **Slug Reservation:** Slugs are alphanumeric with hyphens (e.g., `^[a-z0-9]+(?:-[a-z0-9]+)*$`).
+2. **Reserved Slugs:** System paths such as `admin`, `api`, `auth`, `login`, `signup`, `categories`, `locations`, `settings`, `about`, and `terms` are strictly blacklisted.
+3. **Uniqueness:** Slugs are case-insensitive and strictly unique across the platform.
+4. **404 Handling:** If an unpublished or non-existent store slug is requested, the system renders a branded 404 page with recommendations for nearby active bakers.
+
+---
+
+## Storefront Anatomy
+
+A tenant storefront consists of the following modular sections:
+
+```text
+┌─────────────────────────────────────────────────────────────┐
+│ Hero Banner (Cover Image)                                   │
+│ ┌─────────┐                                                 │
+│ │ Avatar  │  Bakery Name  [Verified Badge]                 │
+│ └─────────┘  Locality, City • Operational Hours             │
+│              Bio & Specialties                              │
+│              [WhatsApp] [Call] [Instagram]                  │
+├─────────────────────────────────────────────────────────────┤
+│ Category Navigation Bar                                     │
+│ [All] [Signature Cakes] [Brownies] [Cookies] [Artisan Bread]│
+├─────────────────────────────────────────────────────────────┤
+│ Product Grid                                                │
+│ ┌───────────────────────────┐ ┌───────────────────────────┐ │
+│ │ [Image]                   │ │ [Image]                   │ │
+│ │ Dark Chocolate Ganache    │ │ Sea Salt Chocochip Cookie │ │
+│ │ From ₹750 (500g / 1kg)    │ │ ₹350 (Box of 6)           │ │
+│ │ [Eggless] [Order via WA]  │ │ [Order via WA]            │ │
+│ └───────────────────────────┘ └───────────────────────────┘ │
+├─────────────────────────────────────────────────────────────┤
+│ Store Info & Order Notice                                   │
+│ • Pickup Address: Sector B, Mahanagar, Lucknow              │
+│ • Order Notice: 24 hours prior booking required             │
+│ • Delivery: Self-pickup or delivery via Dunzo/Porter        │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Theming & Visual Customization
+
+To help bakers preserve their brand individuality, the storefront supports lightweight visual theming:
+
+| Theme Attribute | Customization Options |
+| :--- | :--- |
+| **Accent Color** | Curated palette (Warm Rose, Golden Honey, Forest Sage, Deep Espresso, Charcoal). |
+| **Typography Pairing** | Serif Header / Sans Body (e.g., Playfair Display + Inter) or Modern Clean Sans (Plus Jakarta Sans). |
+| **Banner Layout** | Full bleed hero image, compact banner, or minimal clean card. |
+| **Theme Persistence** | Persisted in the database under the store settings record and hydrated server-side to prevent UI flashing. |
+
+---
+
+## Responsive Breakpoint Standards
+
+Storefront layouts must render flawlessly across all standard device viewports:
+
+* **Mobile Small (320px – 375px):** Single-column cards, sticky contact bar at bottom.
+* **Mobile Standard (390px – 414px):** Optimized thumb-friendly buttons and tap targets.
+* **Tablet (768px – 1024px):** 2-column product grid with sticky category filter.
+* **Desktop (1280px+):** 3 or 4-column product grid with persistent store sidebar.
+

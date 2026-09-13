@@ -1,0 +1,81 @@
+---
+id: catalog-and-units
+title: Product Catalog & Units Specification
+sidebar_position: 3
+---
+
+# Product Catalog & Units Specification
+
+Artisanal bakery products cannot be modeled using a simplistic "one price fits all" e-commerce schema. A cake might be priced by weight, brownies by box counts, sourdough loaves by single pieces, and custom celebration cakes by tiers or servings.
+
+---
+
+## Supported Measurement Units
+
+To accommodate Indian home and independent bakery conventions, Flour n Sugar standardizes the following unit types:
+
+```text
+┌───────────────────────┬───────────────────────┬───────────────────────┐
+│     Weight-Based      │      Count-Based      │     Volume / Size     │
+├───────────────────────┼───────────────────────┼───────────────────────┤
+│ • KG (Kilogram)       │ • PIECE               │ • INCH (Cake tin dia) │
+│ • GRAM                │ • BOX                 │ • ML (Puddings/Sauces)│
+│ • POUND (Traditional) │ • PACK                │ • LITER               │
+│                       │ • SLICE               │                       │
+│                       │ • SERVING             │                       │
+└───────────────────────┴───────────────────────┴───────────────────────┘
+```
+
+---
+
+## Unit Formatting Standards
+
+Consistent formatting ensures a clean, professional aesthetic across all storefronts:
+
+| Internal Unit Code | Display Label | Example Input | Standardized Output |
+| :--- | :--- | :--- | :--- |
+| `KG` | kg | `1`, `0.5`, `1.5` | `1 kg`, `0.5 kg`, `1.5 kg` |
+| `GRAM` | g | `250`, `500` | `250 g`, `500 g` |
+| `POUND` | lb | `1`, `2`, `3` | `1 lb`, `2 lbs` |
+| `PIECE` | pc / pcs | `1`, `6` | `1 pc`, `6 pcs` |
+| `BOX` | Box | `Box of 4` | `Box of 4` |
+| `PACK` | Pack | `Pack of 12` | `Pack of 12` |
+| `SLICE` | Slice | `1` | `Per Slice` |
+| `SERVING` | Serving | `Serves 8-10` | `Serves 8–10` |
+| `INCH` | inch | `6`, `8` | `6 inch dia` |
+
+---
+
+## Pricing Semantics: Price per Unit vs. Fixed Quantity
+
+A critical UX challenge in bakery catalogs is clarifying whether a price refers to a unit rate or a fixed package:
+
+### 1. Fixed Quantity Pricing (Default)
+The baker sets a direct price for an exact delivered quantity.
+* *Example:* "Belgian Chocolate Brownie Box" -> `₹450 for Box of 6`.
+* *Cart/Inquiry Meaning:* The customer receives 1 box containing 6 brownies for ₹450.
+
+### 2. Multi-Variant Options
+A single product can have multiple selectable variants with distinct prices:
+* *Example:* "Classic New York Cheesecake"
+  * Variant A: `500 g` -> `₹650`
+  * Variant B: `1 kg` -> `₹1,200`
+  * Variant C: `Slice` -> `₹180`
+
+### 3. "Price Starting From" Semantics
+For custom or tiered celebration cakes where final decor, figurines, and tier complexity vary:
+* *Example:* "Custom Fondant Tier Cake" -> `From ₹1,200 / kg`
+* The storefront displays a clear **"From ₹1,200"** indicator with a note that final pricing is quoted upon customization review.
+
+---
+
+## Dietary & Allergen Declarations
+
+Every product supports standardized, high-visibility dietary badges:
+
+* 🟢 **Eggless (Vegetarian):** Highly critical for the Indian market, where 40–60% of customers specifically seek egg-free bakes.
+* 🌿 **Vegan:** 100% plant-based, dairy-free.
+* 🌾 **Gluten-Free:** Baked using alternative flours (almond, oat, rice).
+* 🚫 **Sugar-Free / Jaggery / Keto:** Sweetened with dates, jaggery, or stevia.
+* 🥜 **Contains Nuts:** Allergen disclosure for peanuts, almonds, walnuts.
+

@@ -1,0 +1,65 @@
+---
+id: contact-channels
+title: Pre-Commerce Communication Channels
+sidebar_position: 3
+---
+
+# Pre-Commerce Communication Channels
+
+During early stages (MVP 1), Flour n Sugar decouples the **discovery layer** from the **checkout and transaction layer**. Rather than enforcing an in-app cart, the platform turns product intent into direct conversations.
+
+---
+
+## Why "Chat-First" Works for Artisanal Baking
+
+Custom and artisanal baking has unique commercial characteristics that make automated standard e-commerce carts challenging:
+
+1. **High Customization Requirements:** A birthday cake is rarely standard—customers need to discuss flavors, egg/eggless preferences, sponge density, frosting types, custom lettering, and reference photos.
+2. **Variable Lead Times:** Home bakers do not hold pre-baked cakes in inventory. Production schedules depend on kitchen capacity, ingredient procurement, and existing orders for the date.
+3. **Delivery Logistics:** Delivery of fragile multi-tiered cakes or temperature-sensitive chocolates requires coordination (personal pickup vs specialized hyper-local delivery apps like Porter or Dunzo).
+4. **Cultural Familiarity:** In India, over 90% of home baking transactions already conclude over WhatsApp. Forcing an unfamiliar in-app checkout creates friction.
+
+---
+
+## Communication Channel Integration
+
+Flour n Sugar integrates four communication avenues into each baker storefront and product card:
+
+```text
+┌─────────────────────────────────────────────────────────────┐
+│                    Customer Touchpoint                      │
+├──────────────────┬──────────────────┬───────────────────────┤
+│ 1. WhatsApp      │ 2. Direct Phone  │ 3. Email / Form       │
+│ (Primary P0)     │ (Instant Urgency)│ (Corporate / Large)   │
+├──────────────────┼──────────────────┼───────────────────────┤
+│ Click-to-chat    │ One-tap tel: dial│ Standard email link   │
+│ with structured  │ for urgent same- │ for event hampers and │
+│ context message  │ day queries      │ bulk catering         │
+└──────────────────┴──────────────────┴───────────────────────┘
+```
+
+---
+
+## The WhatsApp Deep-Link Pattern
+
+When a customer clicks the **"Inquire via WhatsApp"** button on a specific product card, Flour n Sugar generates a formatted `https://wa.me/` URI containing pre-filled inquiry text.
+
+### Example Generated Message
+
+```text
+Hi [Baker Name]! 👋
+I found your bakery on Flour n Sugar (flournsugar.com/sweetdelights).
+
+I'm interested in:
+🎂 Product: Belgian Chocolate Truffle Cake
+⚖️ Option: 1 kg (Eggless)
+💰 Listed Price: ₹950
+
+Could you please confirm your availability for an order?
+```
+
+### Benefits of Pre-filled Context
+* **Zero Typing Barrier:** The customer doesn't have to explain which item or size they were looking at.
+* **Instant Clarity for the Baker:** The baker immediately sees the product name, variant, and listed price without asking repetitive questions.
+* **Source Attribution:** The baker recognizes that the inquiry originated through their Flour n Sugar storefront.
+

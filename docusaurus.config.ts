@@ -5,20 +5,17 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here.
 
 const config: Config = {
-  title: 'flour-n-sugar Documentation',
-  tagline: 'Documentation for the flour-n-sugar project',
+  title: 'Flour n Sugar Documentation',
+  tagline: 'A community and discovery platform for local, home, and independent bakers',
   favicon: 'img/favicon.ico',
 
   future: {
     v4: true,
   },
 
-  // Update this when you have the actual documentation domain.
   url: 'https://docs.puza.shop',
   baseUrl: '/',
 
-  // GitHub Pages deployment config.
-  // Update these if the documentation is deployed through GitHub Pages.
   organizationName: 'flour-n-sugar',
   projectName: 'flour-n-sugar',
 
@@ -64,8 +61,33 @@ const config: Config = {
 
       items: [
         {
+          to: '/overview/problem-and-opportunity',
+          label: 'Overview',
+          position: 'left',
+        },
+        {
+          to: '/mvp-specifications/mvp-scope',
+          label: 'MVP Specs',
+          position: 'left',
+        },
+        {
+          to: '/roadmap-and-vision/roadmap-phases',
+          label: 'Roadmap',
+          position: 'left',
+        },
+        {
+          to: '/technical-architecture/technology-stack',
+          label: 'Architecture',
+          position: 'left',
+        },
+        {
+          to: '/mvp-1-release-checklist/release-gates-and-framework',
+          label: 'Release Checklist',
+          position: 'left',
+        },
+        {
           href: 'https://puza.shop',
-          label: 'Flour-n-Sugar Staging',
+          label: 'Live Staging',
           position: 'right',
         },
       ],
@@ -76,28 +98,72 @@ const config: Config = {
 
       links: [
         {
+          title: 'Product & Vision',
           items: [
             {
-              label: 'Flour-n-Sugar Staging',
-              href: 'https://puza.shop',
-            }
-          ]
-
+              label: 'Overview & Philosophy',
+              to: '/overview/problem-and-opportunity',
+            },
+            {
+              label: 'Customer Journey',
+              to: '/user-experience/customer-journey',
+            },
+            {
+              label: 'Baker Experience',
+              to: '/user-experience/baker-experience',
+            },
+            {
+              label: 'Long-Term Ecosystem',
+              to: '/roadmap-and-vision/long-term-ecosystem',
+            },
+          ],
         },
-        // {
-        //   title: 'Documentation',
-        //   items: [
-        //     {
-        //       label: 'Overview',
-        //       to: '/',
-        //     },
-        //     {
-        //       label: 'Example Page',
-        //       to: '/User%20Expectations/test',
-        //     },
-        //   ],
-        // },
-
+        {
+          title: 'Specifications & Tech',
+          items: [
+            {
+              label: 'MVP 1 Scope',
+              to: '/mvp-specifications/mvp-scope',
+            },
+            {
+              label: 'Catalog & Indian Units',
+              to: '/mvp-specifications/catalog-and-units',
+            },
+            {
+              label: 'Technical Architecture',
+              to: '/technical-architecture/technology-stack',
+            },
+            {
+              label: 'Data Models (Prisma)',
+              to: '/technical-architecture/data-models',
+            },
+          ],
+        },
+        {
+          title: 'Strategy & Ops',
+          items: [
+            {
+              label: 'Marketplace Flywheel',
+              to: '/business-strategy/marketplace-flywheel',
+            },
+            {
+              label: 'Geographic Rollout (Lucknow)',
+              to: '/business-strategy/geographic-rollout',
+            },
+            {
+              label: 'Monetization Stages',
+              to: '/business-strategy/monetization-strategy',
+            },
+            {
+              label: 'Release Checklist & Gates',
+              to: '/mvp-1-release-checklist/release-gates-and-framework',
+            },
+            {
+              label: 'Live Staging (puza.shop)',
+              href: 'https://puza.shop',
+            },
+          ],
+        },
       ],
 
       copyright: `Copyright © ${new Date().getFullYear()} Flour-n-Sugar. All rights reserved.`,
